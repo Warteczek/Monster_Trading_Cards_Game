@@ -1,13 +1,36 @@
 package at.fhtw.mtcg_app.service.user;
 
+import at.fhtw.httpserver.http.ContentType;
+import at.fhtw.httpserver.http.HttpStatus;
+import at.fhtw.httpserver.http.Method;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.httpserver.server.Service;
 
 public class UserService implements Service {
 
+    private final UserController userController;
+
+    public UserService() {
+        this.userController = new UserController(new UserDAL());
+    }
+
     @Override
     public Response handleRequest(Request request) {
-        return null;
+        if (request.getMethod() == Method.POST && request.getPathParts().get(0)=="users") {
+            return this.userController.addUser(request);
+        } else if (request.getMethod() == Method.GET) {
+            return this.userController.getUserdata();
+        } else if (request.getMethod() == Method.POST && request.getPathParts().get(0)=="sessions") {
+            return this.userController.login(request);
+        } else if (request.getMethod() == Method.PUT) {
+            return this.userController.updateUser(request);
+        }
+
+        return new Response(
+                HttpStatus.BAD_REQUEST,
+                ContentType.JSON,
+                "[]"
+        );
     }
 }
