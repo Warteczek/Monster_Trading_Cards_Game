@@ -61,9 +61,11 @@ public class UserController extends Controller {
 
     public Response updateUser(Request request){
 
+        return null;
     }
 
     public Response login(Request request){
+        return null;
 
     }
 }
