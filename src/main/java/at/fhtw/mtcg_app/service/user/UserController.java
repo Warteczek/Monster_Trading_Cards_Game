@@ -16,7 +16,7 @@ public class UserController extends Controller {
     public UserController(UserDAL userDAL) {
         this.userDAL = userDAL;
     }
-
+    /*
     public Response getUserdata(){
         try {
             User user = this.userDAL.getUser();
@@ -36,7 +36,7 @@ public class UserController extends Controller {
             );
         }
 
-    }
+    }*/
 
     public Response addUser(Request request) {
         try {
@@ -46,7 +46,7 @@ public class UserController extends Controller {
             return new Response(
                     HttpStatus.CREATED,
                     ContentType.JSON,
-                    "{ message: \"Success\" }"
+                    "User successfully created"
             );
         } catch (JsonProcessingException e) {
             e.printStackTrace();

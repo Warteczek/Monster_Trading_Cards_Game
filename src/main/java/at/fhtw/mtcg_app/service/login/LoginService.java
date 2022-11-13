@@ -1,4 +1,4 @@
-package at.fhtw.mtcg_app.service.user;
+package at.fhtw.mtcg_app.service.login;
 
 import at.fhtw.httpserver.http.ContentType;
 import at.fhtw.httpserver.http.HttpStatus;
@@ -7,23 +7,19 @@ import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.httpserver.server.Service;
 
-public class UserService implements Service {
+public class LoginService implements Service {
 
-    private final UserController userController;
+    private final LoginController loginController;
 
-    public UserService() {
-        this.userController = new UserController(new UserDAL());
+    public LoginService() {
+        this.loginController = new LoginController();
     }
 
     @Override
     public Response handleRequest(Request request) {
-
+        System.out.println(request.getPathParts().get(1));
         if (request.getMethod() == Method.POST) {
-            return this.userController.addUser(request);
-        } else if (request.getMethod() == Method.GET) {
-            //return this.userController.getUserdata();
-        } else if (request.getMethod() == Method.PUT) {
-            return this.userController.updateUser(request);
+            return this.loginController.login(request);
         }
 
         return new Response(
