@@ -2,21 +2,34 @@ package at.fhtw.mtcg_app.service.user;
 
 import at.fhtw.mtcg_app.model.User;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserDAL {
     public UserDAL() {
+
 
     }
 
 
     public boolean checkUserExists(User user){
 
+        try(Connection connection= DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres",
+                "TeMarcelo",
+                "21222324");
+            PreparedStatement statement= connection.prepareStatement("""
+                SELECT name, bio, image FROM users
+                WHERE username=?;
+                """)
+        ){
+            statement.setString(1, user.getUsername());
 
-
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()){
+                return true;
+            }
+        } catch(SQLException exception){
+            exception.printStackTrace();
+        }
         return false;
     }
     public void addUser(User user){

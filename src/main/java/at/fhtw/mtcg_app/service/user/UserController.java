@@ -41,6 +41,13 @@ public class UserController extends Controller {
     public Response addUser(Request request) {
         try {
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
+            if(this.userDAL.checkUserExists(user)){
+                return new Response(
+                        HttpStatus.CONFLICT,
+                        ContentType.JSON,
+                        "User with same username already registered"
+                );
+            }
             this.userDAL.addUser(user);
 
             return new Response(

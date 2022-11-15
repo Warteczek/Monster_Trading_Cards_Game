@@ -30,4 +30,19 @@ public class UserTest {
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         Assertions.assertEquals(bufferedReader.readLine(), "User successfully created");
     }
+
+    @Test
+    void testUserExistsAlready() throws IOException {
+        URL url = new URL("http://localhost:10001/users");
+        URLConnection urlConnection = url.openConnection();
+        urlConnection.setDoOutput(true);
+        OutputStream outputStream = urlConnection.getOutputStream();
+        PrintWriter printWriter = new PrintWriter(outputStream);
+        printWriter.write("{\"Username\": \"User1\", \r\n \"Password\":\"12345678\"}");
+        printWriter.close();
+        InputStream inputStream = urlConnection.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        Assertions.assertEquals(bufferedReader.readLine(), "User with same username already registered");
+    }
 }
