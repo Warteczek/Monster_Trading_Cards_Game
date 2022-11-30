@@ -1,5 +1,6 @@
 package at.fhtw.mtcg_app.service.user;
 
+import at.fhtw.dataAccessLayer.repositories.UserRepo;
 import at.fhtw.httpserver.http.ContentType;
 import at.fhtw.httpserver.http.HttpStatus;
 import at.fhtw.httpserver.http.Method;
@@ -12,7 +13,7 @@ public class UserService implements Service {
     private final UserController userController;
 
     public UserService() {
-        this.userController = new UserController(new UserDAL());
+        this.userController = new UserController(new UserRepo());
     }
 
     @Override

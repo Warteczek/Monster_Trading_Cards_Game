@@ -2,6 +2,7 @@ package at.fhtw.mtcg_app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
 public class Controller {
     private ObjectMapper objectMapper;
 

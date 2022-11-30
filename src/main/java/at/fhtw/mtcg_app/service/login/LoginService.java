@@ -17,7 +17,7 @@ public class LoginService implements Service {
 
     @Override
     public Response handleRequest(Request request) {
-        System.out.println(request.getPathParts().get(1));
+        //System.out.println(request.getPathParts().get(1));
         if (request.getMethod() == Method.POST) {
             return this.loginController.login(request);
         }

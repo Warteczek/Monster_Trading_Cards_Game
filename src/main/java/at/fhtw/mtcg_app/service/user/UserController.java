@@ -1,5 +1,6 @@
 package at.fhtw.mtcg_app.service.user;
 
+import at.fhtw.dataAccessLayer.repositories.UserRepo;
 import at.fhtw.httpserver.http.ContentType;
 import at.fhtw.httpserver.http.HttpStatus;
 import at.fhtw.httpserver.server.Request;
@@ -9,12 +10,14 @@ import at.fhtw.mtcg_app.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
+import at.fhtw.dataAccessLayer.UnitOfWork;
+import static at.fhtw.httpserver.server.Service.newUnit;
 
 public class UserController extends Controller {
-    private UserDAL userDAL;
+    private UserRepo userRepo;
 
-    public UserController(UserDAL userDAL) {
-        this.userDAL = userDAL;
+    public UserController(UserRepo userRepo) {
+        this.userRepo = userRepo;
     }
     /*
     public Response getUserdata(){
@@ -41,14 +44,16 @@ public class UserController extends Controller {
     public Response addUser(Request request) {
         try {
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
-            if(this.userDAL.checkUserExists(user)){
+            if(this.userRepo.checkUserExists(user, newUnit)){
+                newUnit.rollback();
                 return new Response(
                         HttpStatus.CONFLICT,
                         ContentType.JSON,
                         "User with same username already registered"
                 );
             }
-            this.userDAL.addUser(user);
+            this.userRepo.addUser(user, newUnit);
+            newUnit.commit();
 
             return new Response(
                     HttpStatus.CREATED,
@@ -58,6 +63,8 @@ public class UserController extends Controller {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
+        newUnit.rollback();
 
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
