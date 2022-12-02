@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -16,11 +17,11 @@ public class LoginTest {
     @Test
     void testLogin() throws Exception {
         URL url = new URL("http://localhost:10001/session");
-        URLConnection urlConnection = url.openConnection();
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setDoOutput(true);
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("{\"Username\": \"User1\", \r\n \"Password\":\"12345678\"}");
+        printWriter.write("{\"Username\": \"kienboec\", \r\n \"Password\":\"daniel\"}");
         printWriter.close();
         InputStream inputStream = urlConnection.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

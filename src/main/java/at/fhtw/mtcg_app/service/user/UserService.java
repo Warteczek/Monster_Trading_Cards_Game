@@ -22,7 +22,7 @@ public class UserService implements Service {
         if (request.getMethod() == Method.POST) {
             return this.userController.addUser(request);
         } else if (request.getMethod() == Method.GET) {
-            //return this.userController.getUserdata();
+            return this.userController.getUserdata(request);
         } else if (request.getMethod() == Method.PUT) {
             return this.userController.updateUser(request);
         }

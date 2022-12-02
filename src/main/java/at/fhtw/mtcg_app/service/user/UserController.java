@@ -19,28 +19,6 @@ public class UserController extends Controller {
     public UserController(UserRepo userRepo) {
         this.userRepo = userRepo;
     }
-    /*
-    public Response getUserdata(){
-        try {
-            User user = this.userDAL.getUser();
-            String userDataJSON = this.getObjectMapper().writeValueAsString(user);
-
-            return new Response(
-                    HttpStatus.OK,
-                    ContentType.JSON,
-                    userDataJSON
-            );
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return new Response(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    ContentType.JSON,
-                    "{ \"message\" : \"Internal Server Error\" }"
-            );
-        }
-
-    }*/
-
     public Response addUser(Request request) {
         try {
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
@@ -81,5 +59,26 @@ public class UserController extends Controller {
     public Response login(Request request){
         return null;
 
+    }
+
+    public Response getUserdata(Request request) {
+        String username= request.getPathParts().get(1);
+        try {
+            User user = this.userRepo.getUserData(username);
+            String userDataJSON = this.getObjectMapper().writeValueAsString(user);
+
+            return new Response(
+                    HttpStatus.OK,
+                    ContentType.JSON,
+                    userDataJSON
+            );
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return new Response(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    ContentType.JSON,
+                    "{ \"message\" : \"Internal Server Error\" }"
+            );
+        }
     }
 }

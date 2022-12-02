@@ -48,28 +48,62 @@ public class UserRepo {
             PreparedStatement statement= newUnit.getStatement("SELECT password, mtcg_token FROM users WHERE username=?");
             statement.setString(1, user.getUsername());
 
-
             ResultSet resultSet= statement.executeQuery();
-            boolean empty=false;
-            if (!resultSet.next()){
-                empty=true;
+
+            boolean empty=true;
+
+            while (resultSet.next()) {
+                empty=false;
+                password= resultSet.getString("password");
+                token= resultSet.getString("mtcg_token");
+            }
+            if(empty){
+                return "None";
+            }
+
+            if(password.equals(user.getPassword())){
                 return token;
             }
-            if(!empty){
-                while (resultSet.next()) {
-                    password= resultSet.getString("password");
-                    token= resultSet.getString("mtcg_token");
-                }
-                if(password==user.getPassword()){
-                    return token;
-                }
+            else{
+                return "None";
             }
 
         } catch(SQLException exception){
             exception.printStackTrace();
         }
 
-    return "None";
+        return "None";
+    }
+
+    public User getUserData() {
+        SELECT name, bio, image FROM users
+        WHERE username=?
+        try{
+            PreparedStatement statement= newUnit.getStatement("SELECT password, mtcg_token FROM users WHERE username=?");
+            statement.setString(1, user.getUsername());
+
+            ResultSet resultSet= statement.executeQuery();
+
+            boolean empty=true;
+
+            while (resultSet.next()) {
+                empty=false;
+                password= resultSet.getString("password");
+                token= resultSet.getString("mtcg_token");
+            }
+
+            User user=new User();
+
+            user.setName();
+            user.setBio();
+            user.setImage();
+            return user;
+        }
+
+    }
+
+    public void setUserData(User userData) {
+        this.userData = userData;
     }
 
     /*
@@ -78,8 +112,7 @@ public class UserRepo {
                 "TeMarcelo",
                 "21222324");
             PreparedStatement statement= connection.prepareStatement("""
-                SELECT name, bio, image FROM users
-                WHERE username=?;
+                ;
                 """)
         ){
             statement.setString(1, user.getUsername());

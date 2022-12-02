@@ -29,32 +29,23 @@ public class LoginController extends Controller {
                 return new Response(
                         HttpStatus.UNAUTHORIZED,
                         ContentType.JSON,
-                        "Invalid username/password provided";
+                        "Invalid username/password provided"
                 );
             }
 
             return new Response(
                     HttpStatus.OK,
                     ContentType.JSON,
-                    "User login successful\n" + content;
+                    "User login successful\n" + content
             );
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
-        newUnit.rollback();
 
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ContentType.JSON,
                 "{ \"message\" : \"Internal Server Error\" }"
         );
-
-
-
-
-
-
-        return null;
     }
 }
