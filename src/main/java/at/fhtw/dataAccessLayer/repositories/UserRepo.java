@@ -26,11 +26,11 @@ public class UserRepo {
 
     }
 
-    public boolean checkUserExists(User user, UnitOfWork newUnit){
+    public boolean checkUserExists(String username, UnitOfWork newUnit){
 
         try{
             PreparedStatement statement= newUnit.getStatement("SELECT name, bio, image FROM users WHERE username=?");
-            statement.setString(1, user.getUsername());
+            statement.setString(1, username);
 
             ResultSet resultSet= statement.executeQuery();
             if (resultSet.next()){
@@ -75,54 +75,62 @@ public class UserRepo {
         return "None";
     }
 
-    public User getUserData() {
-        SELECT name, bio, image FROM users
-        WHERE username=?
+    public User getUserData(String username, UnitOfWork newUnit) {
+        String usernameDB="",  name="", bio="", image="";
+        int coins = 0, elo = 0, wins = 0, losses = 0;
         try{
-            PreparedStatement statement= newUnit.getStatement("SELECT password, mtcg_token FROM users WHERE username=?");
-            statement.setString(1, user.getUsername());
+            PreparedStatement statement= newUnit.getStatement("SELECT username, coins, elo, wins, losses, name, bio, image FROM users WHERE username=?");
+            statement.setString(1, username);
 
             ResultSet resultSet= statement.executeQuery();
 
-            boolean empty=true;
-
             while (resultSet.next()) {
-                empty=false;
-                password= resultSet.getString("password");
-                token= resultSet.getString("mtcg_token");
+                usernameDB=resultSet.getString("username");
+                coins=resultSet.getInt("coins");
+                elo=resultSet.getInt("elo");
+                wins=resultSet.getInt("wins");
+                losses=resultSet.getInt("losses");
+                name= resultSet.getString("name");
+                bio= resultSet.getString("bio");
+                image= resultSet.getString("image");
             }
 
-            User user=new User();
+            User user = new User();
 
-            user.setName();
-            user.setBio();
-            user.setImage();
+            user.setUsername(usernameDB);
+            user.setCoins(coins);
+            user.setElo(elo);
+            user.setWins(wins);
+            user.setLosses(losses);
+
+            user.setName(name);
+            user.setBio(bio);
+            user.setImage(image);
+
             return user;
+
+        }catch(SQLException exception) {
+            exception.printStackTrace();
         }
-
+        return new User();
     }
 
-    public void setUserData(User userData) {
-        this.userData = userData;
-    }
-
-    /*
-    public User getUser(){
-        try(Connection connection= DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres",
-                "TeMarcelo",
-                "21222324");
-            PreparedStatement statement= connection.prepareStatement("""
-                ;
-                """)
-        ){
-            statement.setString(1, user.getUsername());
+    public void updateUserData(User user, UnitOfWork newUnit) {
+        try{
+            PreparedStatement statement= newUnit.getStatement("UPDATE users SET bio=?, image=?, name=? WHERE username=?");
+            statement.setString(1, user.getBio());
+            statement.setString(2, user.getImage());
+            statement.setString(3, user.getName());
+            statement.setString(4, user.getUsername());
 
 
-            statement.execute();
+            statement.executeUpdate();
 
         } catch(SQLException exception){
             exception.printStackTrace();
         }
 
-    }*/
+
+
+    }
 }

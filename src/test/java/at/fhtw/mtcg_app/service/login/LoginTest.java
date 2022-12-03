@@ -19,9 +19,11 @@ public class LoginTest {
         URL url = new URL("http://localhost:10001/session");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setDoOutput(true);
+        urlConnection.setRequestMethod("POST");
+
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("{\"Username\": \"kienboec\", \r\n \"Password\":\"daniel\"}");
+        printWriter.write("{\"Username\": \"User1\", \r\n \"Password\":\"12345678\"}");
         printWriter.close();
         InputStream inputStream = urlConnection.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);

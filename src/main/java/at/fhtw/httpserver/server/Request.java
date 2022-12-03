@@ -101,4 +101,15 @@ public class Request {
     public void setPathParts(List<String> pathParts) {
         this.pathParts = pathParts;
     }
+
+    public boolean checkAuthenticationToken(){
+        String token = this.headerMap.getHeader("Authorization");
+
+        String[] splitAuth = token.split(" ");
+        String[] splitToken = splitAuth[1].split("-");
+        if(splitToken[0].equals(getPathParts().get(1)) && splitToken[1].equals("mtcgToken")){
+            return true;
+        }
+        return false;
+    }
 }

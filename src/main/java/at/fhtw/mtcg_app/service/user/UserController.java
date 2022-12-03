@@ -22,7 +22,7 @@ public class UserController extends Controller {
     public Response addUser(Request request) {
         try {
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
-            if(this.userRepo.checkUserExists(user, newUnit)){
+            if(this.userRepo.checkUserExists(user.getUsername(), newUnit)){
                 newUnit.rollback();
                 return new Response(
                         HttpStatus.CONFLICT,
@@ -52,19 +52,66 @@ public class UserController extends Controller {
     }
 
     public Response updateUser(Request request){
+        if(!request.checkAuthenticationToken()){
+            return new Response(
+                    HttpStatus.UNAUTHORIZED,
+                    ContentType.JSON,
+                    "Authentication information is missing or invalid"
+            );
+        }
 
-        return null;
-    }
 
-    public Response login(Request request){
-        return null;
+        String username= request.getPathParts().get(1);
+        if(!this.userRepo.checkUserExists(username, newUnit)){
+            return new Response(
+                    HttpStatus.NOT_FOUND,
+                    ContentType.JSON,
+                    "User not found"
+            );
+        }
+        try {
+            User user = this.getObjectMapper().readValue(request.getBody(), User.class);
 
+            this.userRepo.updateUserData(user, newUnit);
+            newUnit.commit();
+
+            return new Response(
+                    HttpStatus.OK,
+                    ContentType.JSON,
+                    "User successfully updated"
+            );
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        newUnit.rollback();
+
+        return new Response(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ContentType.JSON,
+                "{ \"message\" : \"Internal Server Error\" }"
+        );
     }
 
     public Response getUserdata(Request request) {
+        if(!request.checkAuthenticationToken()){
+            return new Response(
+                    HttpStatus.UNAUTHORIZED,
+                    ContentType.JSON,
+                    "Authentication information is missing or invalid"
+            );
+        }
+
         String username= request.getPathParts().get(1);
         try {
-            User user = this.userRepo.getUserData(username);
+            if(!this.userRepo.checkUserExists(username, newUnit)){
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.JSON,
+                        "User not found"
+                );
+            }
+            User user = this.userRepo.getUserData(username, newUnit);
             String userDataJSON = this.getObjectMapper().writeValueAsString(user);
 
             return new Response(
