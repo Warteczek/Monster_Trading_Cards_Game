@@ -129,8 +129,5 @@ public class UserRepo {
         } catch(SQLException exception){
             exception.printStackTrace();
         }
-
-
-
     }
 }

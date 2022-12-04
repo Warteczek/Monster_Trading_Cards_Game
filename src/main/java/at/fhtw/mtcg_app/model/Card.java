@@ -10,4 +10,10 @@ public class Card {
     private String name;
     @JsonAlias({"Damage"})
     private int damage;
+    @JsonAlias({"Type"})
+    private String type;
+    @JsonAlias({"Element"})
+    private String element;
+    @JsonAlias({"PackageID"})
+    private int packageID;
 }
