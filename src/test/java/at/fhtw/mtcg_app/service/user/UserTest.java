@@ -84,4 +84,25 @@ public class UserTest {
         }
     }
 
+    @Test
+    void testUpdateUserdata() throws IOException {
+        URL url = new URL("http://localhost:10001/users/User1");
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("PUT");
+        urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
+        urlConnection.setDoOutput(true);
+        OutputStream outputStream = urlConnection.getOutputStream();
+        PrintWriter printWriter = new PrintWriter(outputStream);
+        printWriter.write("{\"Username\": \"User1\", \r\n \"Image\":\":'(\"}");
+        printWriter.close();
+
+        InputStream inputStream = urlConnection.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+        Assertions.assertEquals(bufferedReader.readLine(), "User successfully updated");
+
+        bufferedReader.close();
+    }
+
 }

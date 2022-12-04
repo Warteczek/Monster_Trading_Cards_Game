@@ -18,13 +18,15 @@ public class LoginTest {
     void testLogin() throws Exception {
         URL url = new URL("http://localhost:10001/session");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        urlConnection.setDoOutput(true);
         urlConnection.setRequestMethod("POST");
+        urlConnection.setDoOutput(true);
+
 
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
         printWriter.write("{\"Username\": \"User1\", \r\n \"Password\":\"12345678\"}");
         printWriter.close();
+
         InputStream inputStream = urlConnection.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
