@@ -123,4 +123,15 @@ public class Request {
         }
         return false;
     }
+
+    public String getTokenUser(){
+        String token = this.headerMap.getHeader("Authorization");
+
+        String[] splitAuth = token.split(" ");
+        String[] splitToken = splitAuth[1].split("-");
+        if(splitToken[1].equals("mtcgToken")){
+            return splitToken[0];
+        }
+        return "";
+    }
 }

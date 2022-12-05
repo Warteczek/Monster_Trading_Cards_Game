@@ -130,4 +130,27 @@ public class UserRepo {
             exception.printStackTrace();
         }
     }
+
+    public boolean checkUserHasEnoughMoneyForPackage(String username, UnitOfWork newUnit){
+
+        try{
+            PreparedStatement statement= newUnit.getStatement("SELECT coins FROM users WHERE username=?");
+            statement.setString(1, username);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()){
+                if(resultSet.getInt("coins")>=5){
+                    return true;
+                }
+
+            }
+        } catch(SQLException exception){
+            exception.printStackTrace();
+        }
+        return false;
+    }
+
+    public void subtractPackageCoinsFromUser(String username, UnitOfWork newUnit) {
+
+    }
 }

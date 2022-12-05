@@ -29,31 +29,37 @@ public class PackageController extends Controller {
             return new Response(
                     HttpStatus.FORBIDDEN,
                     ContentType.JSON,
-                    "Authentication information is missing or invalid"
+                    "Provided user is not \"admin\""
             );
         }
 
+        String packageID;
+        do{
+            packageID=generatePackageID(15);
+        }while(this.packageRepo.checkPackageExists(packageID, newUnit));
+
+
         try {
             Card[] cards = this.getObjectMapper().readValue(request.getBody(), Card[].class);
-            boolean created=this.packageRepo.addPackage(cards, newUnit);
-
-            if(created){
-                newUnit.commit();
-
-                return new Response(
-                        HttpStatus.CREATED,
-                        ContentType.JSON,
-                        "Package and cards successfully created"
-                );
-
-            }else{
-                newUnit.rollback();
-                return new Response(
-                        HttpStatus.CONFLICT,
-                        ContentType.JSON,
-                        "At least one card in the packages already exists"
-                );
+            for (Card card : cards){
+                if(this.packageRepo.checkCardExists(card.getId(), newUnit)){
+                    return new Response(
+                            HttpStatus.CONFLICT,
+                            ContentType.JSON,
+                            "At least one card in the packages already exists"
+                    );
+                }
             }
+            this.packageRepo.addPackage(cards, packageID, newUnit);
+
+            newUnit.commit();
+
+            return new Response(
+                    HttpStatus.CREATED,
+                    ContentType.JSON,
+                    "Package and cards successfully created"
+            );
+
 
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -67,4 +73,30 @@ public class PackageController extends Controller {
                 "{ \"message\" : \"Internal Server Error\" }"
         );
     }
+
+    private String generatePackageID(int length) {
+        // chose a Character random from this String
+        String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                + "0123456789"
+                + "abcdefghijklmnopqrstuvxyz";
+
+        // create StringBuffer size of AlphaNumericString
+        StringBuilder sb = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+
+            // generate a random number between
+            // 0 to AlphaNumericString variable length
+            int index
+                    = (int)(AlphaNumericString.length()
+                    * Math.random());
+
+            // add Character one by one in end of sb
+            sb.append(AlphaNumericString
+                    .charAt(index));
+        }
+
+        return sb.toString();
+    }
+
 }

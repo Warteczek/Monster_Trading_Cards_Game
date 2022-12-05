@@ -7,9 +7,10 @@ import at.fhtw.mtcg_app.model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class PackageRepo {
-    public boolean addPackage(Card[] cards, UnitOfWork newUnit){
+    public boolean addPackage(Card[] cards, String packageID, UnitOfWork newUnit){
         for (Card card : cards)
         {
             if(checkCardExists(card.getId(), newUnit)){
@@ -22,7 +23,7 @@ public class PackageRepo {
                 statement.setString(3, card.getId());
                 statement.setInt(4, card.getDamage());
                 statement.setString(5, card.getElement());
-                statement.setInt(6, card.getPackageID());
+                statement.setString(6, packageID);
 
                 statement.execute();
 
@@ -37,7 +38,7 @@ public class PackageRepo {
     public boolean checkCardExists(String cardID, UnitOfWork newUnit){
 
         try{
-            PreparedStatement statement= newUnit.getStatement("SELECT * FROM users WHERE username=?");
+            PreparedStatement statement= newUnit.getStatement("SELECT * FROM cards WHERE id=?");
             statement.setString(1, cardID);
 
             ResultSet resultSet= statement.executeQuery();
@@ -48,5 +49,29 @@ public class PackageRepo {
             exception.printStackTrace();
         }
         return false;
+    }
+
+    public boolean checkPackageExists(String packageID, UnitOfWork newUnit){
+
+        try{
+            PreparedStatement statement= newUnit.getStatement("SELECT * FROM cards WHERE package_id=?");
+            statement.setString(1, packageID);
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()){
+                return true;
+            }
+        } catch(SQLException exception){
+            exception.printStackTrace();
+        }
+        return false;
+    }
+
+    public List<String> getPackages(UnitOfWork newUnit) {
+
+    }
+
+    public void addPackageToStack(String username, String buyPackageID, UnitOfWork newUnit) {
+
     }
 }
