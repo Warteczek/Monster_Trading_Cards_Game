@@ -1,5 +1,6 @@
 package at.fhtw.mtcg_app.service.transactions;
 
+import at.fhtw.dataAccessLayer.UnitOfWork;
 import at.fhtw.dataAccessLayer.repositories.PackageRepo;
 import at.fhtw.dataAccessLayer.repositories.UserRepo;
 import at.fhtw.httpserver.http.ContentType;
@@ -10,8 +11,8 @@ import at.fhtw.mtcg_app.controller.Controller;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
-import static at.fhtw.httpserver.server.Service.newUnit;
 
 public class TransactionController extends Controller {
     private PackageRepo packageRepo;
@@ -24,6 +25,7 @@ public class TransactionController extends Controller {
 
 
     public Response purchasePackage(Request request) {
+        UnitOfWork newUnit = new UnitOfWork();
         String username = request.getTokenUser();
 
         if(username.equals("")){
@@ -69,6 +71,9 @@ public class TransactionController extends Controller {
             //selects a random package from all possible Packages
             String buyPackageID=selectRandomPackage(packageIDs);
 
+            //TODO es wird immer selbes Packet zurückgegeben
+            // System.out.println(buyPackageID);
+
             //subtracts the amount of coins, that a package costs from the users coins
             this.userRepo.subtractPackageCoinsFromUser(username, newUnit);
 
@@ -83,7 +88,7 @@ public class TransactionController extends Controller {
                     "A package has been successfully bought"
             );
 
-        }catch(SQLException e){
+        }catch(Exception e){
             e.printStackTrace();
         }
 
@@ -97,6 +102,20 @@ public class TransactionController extends Controller {
     }
 
     private String selectRandomPackage(List<String> packageIDs) {
+        String selectedPackage;
 
+        int randomNum;
+
+        int numberOfEntries=packageIDs.size();
+        if(numberOfEntries<=1){
+            randomNum=0;
+        }else{
+            randomNum = ThreadLocalRandom.current().nextInt(0, numberOfEntries-1);
+        }
+
+        selectedPackage= packageIDs.get(randomNum);
+
+
+        return selectedPackage;
     }
 }

@@ -115,13 +115,13 @@ public class UserRepo {
         return new User();
     }
 
-    public void updateUserData(User user, UnitOfWork newUnit) {
+    public void updateUserData(String username, User user, UnitOfWork newUnit) {
         try{
             PreparedStatement statement= newUnit.getStatement("UPDATE users SET bio=?, image=?, name=? WHERE username=?");
             statement.setString(1, user.getBio());
             statement.setString(2, user.getImage());
             statement.setString(3, user.getName());
-            statement.setString(4, user.getUsername());
+            statement.setString(4, username);
 
 
             statement.executeUpdate();

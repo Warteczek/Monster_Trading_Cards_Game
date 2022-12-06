@@ -7,6 +7,7 @@ import at.fhtw.mtcg_app.model.User;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PackageRepo {
@@ -68,6 +69,20 @@ public class PackageRepo {
     }
 
     public List<String> getPackages(UnitOfWork newUnit) {
+        List<String> allPackages= new ArrayList<String>();
+
+        try{
+            PreparedStatement statement= newUnit.getStatement("SELECT package_id FROM cards");
+
+            ResultSet resultSet= statement.executeQuery();
+            if (resultSet.next()){
+                allPackages.add(resultSet.getString("package_id"));
+            }
+        } catch(SQLException exception){
+            exception.printStackTrace();
+        }
+
+        return allPackages;
 
     }
 

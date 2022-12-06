@@ -23,6 +23,8 @@ public class LoginTest {
         printWriter.write("{\"Username\": \"User1\", \r\n \"Password\":\"12345678\"}");
         printWriter.close();
 
+        // TODO Test fixen
+
         InputStream inputStream = urlConnection.getInputStream();
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);

@@ -87,7 +87,7 @@ public class UserTest {
         urlConnection.setDoOutput(true);
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("{\"Username\": \"User1\", \r\n \"Image\":\":'(\"}");
+        printWriter.write("{\"Name\": \"Horst\", \r\n \"Image\":\":'(\"}");
         printWriter.close();
 
         InputStream inputStream = urlConnection.getInputStream();

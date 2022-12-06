@@ -1,5 +1,6 @@
 package at.fhtw.mtcg_app.service.packages;
 
+import at.fhtw.dataAccessLayer.UnitOfWork;
 import at.fhtw.dataAccessLayer.repositories.PackageRepo;
 import at.fhtw.dataAccessLayer.repositories.UserRepo;
 import at.fhtw.httpserver.http.ContentType;
@@ -15,8 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
-import static at.fhtw.httpserver.server.Service.newUnit;
-
 public class PackageController extends Controller {
 
     private PackageRepo packageRepo;
@@ -25,10 +24,11 @@ public class PackageController extends Controller {
         this.packageRepo = packageRepo;
     }
     public Response createPackage(Request request) {
+        UnitOfWork newUnit = new UnitOfWork();
         if(!request.checkAdminToken()){
             return new Response(
                     HttpStatus.FORBIDDEN,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "Provided user is not \"admin\""
             );
         }
@@ -45,7 +45,7 @@ public class PackageController extends Controller {
                 if(this.packageRepo.checkCardExists(card.getId(), newUnit)){
                     return new Response(
                             HttpStatus.CONFLICT,
-                            ContentType.JSON,
+                            ContentType.PLAIN_TEXT,
                             "At least one card in the packages already exists"
                     );
                 }
@@ -56,7 +56,7 @@ public class PackageController extends Controller {
 
             return new Response(
                     HttpStatus.CREATED,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "Package and cards successfully created"
             );
 

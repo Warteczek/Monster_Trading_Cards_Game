@@ -24,15 +24,18 @@ public class UnitOfWork {
     public void commit() {
         try{
             this.connection.commit();
+            this.connection.close();
         }
         catch(SQLException e){
             e.printStackTrace();
         }
+
     }
 
     public void rollback() {
         try{
             this.connection.rollback();
+            this.connection.close();
         }
         catch(SQLException e){
             e.printStackTrace();
