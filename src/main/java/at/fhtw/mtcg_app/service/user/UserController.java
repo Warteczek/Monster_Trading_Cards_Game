@@ -26,7 +26,7 @@ public class UserController extends Controller {
                 newUnit.rollback();
                 return new Response(
                         HttpStatus.CONFLICT,
-                        ContentType.JSON,
+                        ContentType.PLAIN_TEXT,
                         "User with same username already registered"
                 );
             }
@@ -35,10 +35,10 @@ public class UserController extends Controller {
 
             return new Response(
                     HttpStatus.CREATED,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "User successfully created"
             );
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -61,16 +61,17 @@ public class UserController extends Controller {
             );
         }
 
-
-        String username= request.getPathParts().get(1);
-        if(!this.userRepo.checkUserExists(username, newUnit)){
-            return new Response(
-                    HttpStatus.NOT_FOUND,
-                    ContentType.PLAIN_TEXT,
-                    "User not found"
-            );
-        }
         try {
+
+            String username= request.getPathParts().get(1);
+            if(!this.userRepo.checkUserExists(username, newUnit)){
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.PLAIN_TEXT,
+                        "User not found"
+                );
+            }
+
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
 
             this.userRepo.updateUserData(username, user, newUnit);
@@ -82,7 +83,7 @@ public class UserController extends Controller {
                     ContentType.PLAIN_TEXT,
                     "User successfully updated"
             );
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -122,7 +123,7 @@ public class UserController extends Controller {
                     ContentType.JSON,
                     userDataJSON
             );
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new Response(
                     HttpStatus.INTERNAL_SERVER_ERROR,

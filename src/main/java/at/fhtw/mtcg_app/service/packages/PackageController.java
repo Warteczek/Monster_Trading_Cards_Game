@@ -25,23 +25,25 @@ public class PackageController extends Controller {
     }
     public Response createPackage(Request request) {
         UnitOfWork newUnit = new UnitOfWork();
-        if(!request.checkAdminToken()){
-            return new Response(
-                    HttpStatus.FORBIDDEN,
-                    ContentType.PLAIN_TEXT,
-                    "Provided user is not \"admin\""
-            );
-        }
-
-        String packageID;
-        do{
-            packageID=generatePackageID(15);
-        }while(this.packageRepo.checkPackageExists(packageID, newUnit));
-
-
         try {
+            if(!request.checkAdminToken()){
+                return new Response(
+                        HttpStatus.FORBIDDEN,
+                        ContentType.PLAIN_TEXT,
+                        "Provided user is not \"admin\""
+                );
+            }
+
+            String packageID;
+            do{
+                packageID=generatePackageID(15);
+            }while(this.packageRepo.checkPackageExists(packageID, newUnit));
+
+
+
             Card[] cards = this.getObjectMapper().readValue(request.getBody(), Card[].class);
             for (Card card : cards){
+
                 if(this.packageRepo.checkCardExists(card.getId(), newUnit)){
                     return new Response(
                             HttpStatus.CONFLICT,
@@ -49,6 +51,8 @@ public class PackageController extends Controller {
                             "At least one card in the packages already exists"
                     );
                 }
+
+
             }
             this.packageRepo.addPackage(cards, packageID, newUnit);
 
@@ -61,7 +65,7 @@ public class PackageController extends Controller {
             );
 
 
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

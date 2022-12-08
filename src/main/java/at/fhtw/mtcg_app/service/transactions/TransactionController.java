@@ -31,48 +31,49 @@ public class TransactionController extends Controller {
         if(username.equals("")){
             return new Response(
                     HttpStatus.UNAUTHORIZED,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "Authentication information is missing or invalid"
             );
         }
 
-        boolean userExists=this.userRepo.checkUserExists(username, newUnit);
-        if(!userExists){
-            return new Response(
-                    HttpStatus.NOT_FOUND,
-                    ContentType.JSON,
-                    "User can not be found"
-            );
-        }
-
-        boolean userHasEnoughMoney=this.userRepo.checkUserHasEnoughMoneyForPackage(username, newUnit);
-
-        if(!userHasEnoughMoney){
-            return new Response(
-                    HttpStatus.FORBIDDEN,
-                    ContentType.JSON,
-                    "Not enough money for buying a card package"
-            );
-        }
-
         try{
+            boolean userExists=this.userRepo.checkUserExists(username, newUnit);
+            if(!userExists){
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.PLAIN_TEXT,
+                        "User can not be found"
+                );
+            }
+
+            boolean userHasEnoughMoney=this.userRepo.checkUserHasEnoughMoneyForPackage(username, newUnit);
+
+            if(!userHasEnoughMoney){
+                return new Response(
+                        HttpStatus.FORBIDDEN,
+                        ContentType.PLAIN_TEXT,
+                        "Not enough money for buying a card package"
+                );
+            }
+
+
+
             //gives back all possible packages
             List<String> packageIDs= this.packageRepo.getPackages(newUnit);
 
             //checks if there is at least one package
-            if(packageIDs.size()<1){
+            if(packageIDs.isEmpty()){
+                System.out.println("Empty");
                 return new Response(
                         HttpStatus.NOT_FOUND,
-                        ContentType.JSON,
+                        ContentType.PLAIN_TEXT,
                         "No card package available for buying"
                 );
             }
 
+
             //selects a random package from all possible Packages
             String buyPackageID=selectRandomPackage(packageIDs);
-
-            //TODO es wird immer selbes Packet zurückgegeben
-            // System.out.println(buyPackageID);
 
             //subtracts the amount of coins, that a package costs from the users coins
             this.userRepo.subtractPackageCoinsFromUser(username, newUnit);
@@ -84,7 +85,7 @@ public class TransactionController extends Controller {
 
             return new Response(
                     HttpStatus.OK,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "A package has been successfully bought"
             );
 

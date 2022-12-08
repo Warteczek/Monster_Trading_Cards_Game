@@ -38,7 +38,7 @@ public class LoginController extends Controller {
                     ContentType.PLAIN_TEXT,
                     "User login successful\n" + content
             );
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

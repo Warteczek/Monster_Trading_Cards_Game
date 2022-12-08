@@ -46,4 +46,35 @@ public class PackageTest {
             Assertions.assertFalse(false);
         }
     }
+
+    @Test
+    void testPurchasePackage() throws IOException {
+        URL url = new URL("http://localhost:10001/transactions/packages");
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("POST");
+        urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
+        urlConnection.setDoOutput(true);
+
+        InputStream inputStream = urlConnection.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+        Assertions.assertEquals(bufferedReader.readLine(), "A package has been successfully bought");
+
+        bufferedReader.close();
+    }
+
+    @Test
+    void testPurchaseWithoutPackage() throws IOException {
+        URL url = new URL("http://localhost:10001/transactions/packages");
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("POST");
+        urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
+        urlConnection.setDoOutput(true);
+
+        if(urlConnection.getResponseCode()==404){
+            System.out.println(urlConnection.getResponseCode());
+            Assertions.assertFalse(false);
+        }
+    }
 }

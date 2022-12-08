@@ -3,6 +3,7 @@ package at.fhtw.dataAccessLayer.repositories;
 import at.fhtw.dataAccessLayer.UnitOfWork;
 import at.fhtw.mtcg_app.model.Card;
 import at.fhtw.mtcg_app.model.User;
+import jdk.jshell.spi.ExecutionControl;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,13 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PackageRepo {
-    public boolean addPackage(Card[] cards, String packageID, UnitOfWork newUnit){
+    public boolean addPackage(Card[] cards, String packageID, UnitOfWork newUnit) throws Exception {
         for (Card card : cards)
         {
-            if(checkCardExists(card.getId(), newUnit)){
-                return false;
-            }
             try{
+                if(checkCardExists(card.getId(), newUnit)){
+                    return false;
+                }
+
                 PreparedStatement statement= newUnit.getStatement("INSERT INTO cards(name, type, id, damage, element_type, package_id) VALUES(?,?,?,?,?,?)");
                 statement.setString(1, card.getName());
                 statement.setString(2, card.getType());
@@ -30,13 +32,14 @@ public class PackageRepo {
 
             } catch(SQLException exception){
                 exception.printStackTrace();
+                throw new Exception("Could not add Package");
             }
         }
 
         return true;
     }
 
-    public boolean checkCardExists(String cardID, UnitOfWork newUnit){
+    public boolean checkCardExists(String cardID, UnitOfWork newUnit) throws Exception {
 
         try{
             PreparedStatement statement= newUnit.getStatement("SELECT * FROM cards WHERE id=?");
@@ -48,11 +51,12 @@ public class PackageRepo {
             }
         } catch(SQLException exception){
             exception.printStackTrace();
+            throw new Exception("Could not check if card exists");
         }
         return false;
     }
 
-    public boolean checkPackageExists(String packageID, UnitOfWork newUnit){
+    public boolean checkPackageExists(String packageID, UnitOfWork newUnit) throws Exception {
 
         try{
             PreparedStatement statement= newUnit.getStatement("SELECT * FROM cards WHERE package_id=?");
@@ -64,29 +68,49 @@ public class PackageRepo {
             }
         } catch(SQLException exception){
             exception.printStackTrace();
+            throw new Exception("Could not check if package exists");
         }
         return false;
     }
 
-    public List<String> getPackages(UnitOfWork newUnit) {
+    public List<String> getPackages(UnitOfWork newUnit) throws Exception {
         List<String> allPackages= new ArrayList<String>();
-
         try{
-            PreparedStatement statement= newUnit.getStatement("SELECT package_id FROM cards");
+            PreparedStatement statement= newUnit.getStatement("SELECT DISTINCT package_id FROM cards");
 
             ResultSet resultSet= statement.executeQuery();
-            if (resultSet.next()){
+            while (resultSet.next()){
                 allPackages.add(resultSet.getString("package_id"));
             }
         } catch(SQLException exception){
             exception.printStackTrace();
+            throw new Exception("Could not get packages");
         }
-
         return allPackages;
-
     }
 
-    public void addPackageToStack(String username, String buyPackageID, UnitOfWork newUnit) {
+    public void addPackageToStack(String username, String buyPackageID, UnitOfWork newUnit) throws Exception {
+        try{
+            PreparedStatement statementSelect= newUnit.getStatement("SELECT id FROM cards WHERE package_id=?");
+            statementSelect.setString(1, buyPackageID);
+            ResultSet resultSet=statementSelect.executeQuery();
 
+            List<String> cardIDs=new ArrayList<String>();
+            while(resultSet.next()){
+                cardIDs.add(resultSet.getString("id"));
+            }
+
+
+            for (String cardID : cardIDs){
+                PreparedStatement statement= newUnit.getStatement("INSERT INTO stack(username, card_id) VALUES(?,?)");
+                statement.setString(1, username);
+                statement.setString(2, cardID);
+
+                statement.execute();
+            }
+        } catch(SQLException exception){
+            exception.printStackTrace();
+            throw new Exception("Could not add cards to stack");
+        }
     }
 }
