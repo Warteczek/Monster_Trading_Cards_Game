@@ -11,7 +11,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
 import at.fhtw.dataAccessLayer.UnitOfWork;
-import static at.fhtw.httpserver.server.Service.newUnit;
 
 public class UserController extends Controller {
     private UserRepo userRepo;
@@ -20,13 +19,14 @@ public class UserController extends Controller {
         this.userRepo = userRepo;
     }
     public Response addUser(Request request) {
+        UnitOfWork newUnit = new UnitOfWork();
         try {
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
             if(this.userRepo.checkUserExists(user.getUsername(), newUnit)){
                 newUnit.rollback();
                 return new Response(
                         HttpStatus.CONFLICT,
-                        ContentType.JSON,
+                        ContentType.PLAIN_TEXT,
                         "User with same username already registered"
                 );
             }
@@ -35,10 +35,10 @@ public class UserController extends Controller {
 
             return new Response(
                     HttpStatus.CREATED,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "User successfully created"
             );
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -52,35 +52,38 @@ public class UserController extends Controller {
     }
 
     public Response updateUser(Request request){
+        UnitOfWork newUnit = new UnitOfWork();
         if(!request.checkAuthenticationToken()){
             return new Response(
                     HttpStatus.UNAUTHORIZED,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "Authentication information is missing or invalid"
             );
         }
 
-
-        String username= request.getPathParts().get(1);
-        if(!this.userRepo.checkUserExists(username, newUnit)){
-            return new Response(
-                    HttpStatus.NOT_FOUND,
-                    ContentType.JSON,
-                    "User not found"
-            );
-        }
         try {
+
+            String username= request.getPathParts().get(1);
+            if(!this.userRepo.checkUserExists(username, newUnit)){
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.PLAIN_TEXT,
+                        "User not found"
+                );
+            }
+
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
 
-            this.userRepo.updateUserData(user, newUnit);
+            this.userRepo.updateUserData(username, user, newUnit);
+            // TODO catch exception before commit
             newUnit.commit();
 
             return new Response(
                     HttpStatus.OK,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "User successfully updated"
             );
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -94,10 +97,11 @@ public class UserController extends Controller {
     }
 
     public Response getUserdata(Request request) {
+        UnitOfWork newUnit = new UnitOfWork();
         if(!request.checkAuthenticationToken()){
             return new Response(
                     HttpStatus.UNAUTHORIZED,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "Authentication information is missing or invalid"
             );
         }
@@ -107,7 +111,7 @@ public class UserController extends Controller {
             if(!this.userRepo.checkUserExists(username, newUnit)){
                 return new Response(
                         HttpStatus.NOT_FOUND,
-                        ContentType.JSON,
+                        ContentType.PLAIN_TEXT,
                         "User not found"
                 );
             }
@@ -119,7 +123,7 @@ public class UserController extends Controller {
                     ContentType.JSON,
                     userDataJSON
             );
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return new Response(
                     HttpStatus.INTERNAL_SERVER_ERROR,

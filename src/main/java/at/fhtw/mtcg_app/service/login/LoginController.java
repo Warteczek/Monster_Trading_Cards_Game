@@ -1,5 +1,6 @@
 package at.fhtw.mtcg_app.service.login;
 
+import at.fhtw.dataAccessLayer.UnitOfWork;
 import at.fhtw.dataAccessLayer.repositories.UserRepo;
 import at.fhtw.httpserver.http.ContentType;
 import at.fhtw.httpserver.http.HttpStatus;
@@ -8,8 +9,6 @@ import at.fhtw.httpserver.server.Response;
 import at.fhtw.mtcg_app.controller.Controller;
 import at.fhtw.mtcg_app.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
-import static at.fhtw.httpserver.server.Service.newUnit;
 
 public class LoginController extends Controller {
 
@@ -20,6 +19,7 @@ public class LoginController extends Controller {
     }
 
     public Response login(Request request){
+        UnitOfWork newUnit = new UnitOfWork();
         try {
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
 
@@ -28,17 +28,17 @@ public class LoginController extends Controller {
             if(content=="None"){
                 return new Response(
                         HttpStatus.UNAUTHORIZED,
-                        ContentType.JSON,
+                        ContentType.PLAIN_TEXT,
                         "Invalid username/password provided"
                 );
             }
 
             return new Response(
                     HttpStatus.OK,
-                    ContentType.JSON,
+                    ContentType.PLAIN_TEXT,
                     "User login successful\n" + content
             );
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

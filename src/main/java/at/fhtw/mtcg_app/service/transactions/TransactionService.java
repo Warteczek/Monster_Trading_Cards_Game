@@ -1,4 +1,4 @@
-package at.fhtw.mtcg_app.service.packages;
+package at.fhtw.mtcg_app.service.transactions;
 
 import at.fhtw.dataAccessLayer.repositories.PackageRepo;
 import at.fhtw.dataAccessLayer.repositories.UserRepo;
@@ -8,19 +8,20 @@ import at.fhtw.httpserver.http.Method;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.httpserver.server.Service;
-import at.fhtw.mtcg_app.service.user.UserController;
+import at.fhtw.mtcg_app.service.login.LoginController;
 
-public class PackageService implements Service {
+public class TransactionService implements Service {
 
-    private final PackageController packageController;
+    private final TransactionController transactionController;
 
-    public PackageService() {
-        this.packageController = new PackageController(new PackageRepo());
+    public TransactionService() {
+        this.transactionController = new TransactionController(new PackageRepo(), new UserRepo());
     }
+
     @Override
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.POST) {
-            return this.packageController.createPackage(request);
+        if (request.getMethod() == Method.POST && request.getPathParts().get(1).equals("packages")) {
+            return this.transactionController.purchasePackage(request);
         }
 
         return new Response(
