@@ -20,11 +20,15 @@ public class UserRepo {
 
             statement.execute();
 
+            //creates user in Deck DB
+            PreparedStatement statementDeck= newUnit.getStatement("INSERT INTO decks(owner_id) VALUES(?)");
+            statementDeck.setString(1, user.getUsername());
+            statementDeck.execute();
+
         } catch(SQLException exception){
             exception.printStackTrace();
             throw new Exception("could not add user");
         }
-
     }
 
     public boolean checkUserExists(String username, UnitOfWork newUnit) throws Exception {

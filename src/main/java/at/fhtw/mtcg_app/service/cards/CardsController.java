@@ -11,6 +11,7 @@ import at.fhtw.mtcg_app.controller.Controller;
 import at.fhtw.mtcg_app.model.Card;
 import at.fhtw.mtcg_app.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CardsController extends Controller {
@@ -44,9 +45,16 @@ public class CardsController extends Controller {
                         "User can not be found"
                 );
             }
-            // TODO show Cards
 
             List<Card> cards = this.cardsRepo.getCards(username, newUnit);
+
+            if(cards.isEmpty()){
+                return new Response(
+                        HttpStatus.NO_CONTENT,
+                        ContentType.PLAIN_TEXT,
+                        "The request was fine, but the user doesn't have any cards"
+                );
+            }
             String cardsJSON = this.getObjectMapper().writeValueAsString(cards);
 
             return new Response(
@@ -54,6 +62,7 @@ public class CardsController extends Controller {
                     ContentType.JSON,
                     cardsJSON
             );
+
 
         }catch(Exception e){
             e.printStackTrace();
@@ -89,7 +98,21 @@ public class CardsController extends Controller {
                 );
             }
 
-            // TODO configure Deck
+            //TODO add cards to deck
+
+            String requestBody=request.getBody();
+
+            List<String> cardIDs = new ArrayList<String>();
+
+            this.cardsRepo.addCardsToDeck(username, cardIDs, newUnit);
+
+            newUnit.commit();
+
+            return new Response(
+                    HttpStatus.OK,
+                    ContentType.PLAIN_TEXT,
+                    "A package has been successfully bought"
+            );
 
         }catch(Exception e){
             e.printStackTrace();

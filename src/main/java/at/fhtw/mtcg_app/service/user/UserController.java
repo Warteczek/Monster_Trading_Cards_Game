@@ -75,7 +75,7 @@ public class UserController extends Controller {
             User user = this.getObjectMapper().readValue(request.getBody(), User.class);
 
             this.userRepo.updateUserData(username, user, newUnit);
-            // TODO catch exception before commit
+
             newUnit.commit();
 
             return new Response(

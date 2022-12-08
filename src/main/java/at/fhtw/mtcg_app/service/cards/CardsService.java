@@ -20,11 +20,11 @@ public class CardsService implements Service {
     }
     @Override
     public Response handleRequest(Request request) {
-        if (request.getMethod() == Method.GET && request.getPathParts().get(0)=="cards") {
+        if (request.getMethod() == Method.GET && request.getPathParts().get(0).equals("cards")) {
             return this.cardsController.showCards(request);
-        }else if(request.getMethod() == Method.GET && request.getPathParts().get(0)=="deck"){
+        }else if(request.getMethod() == Method.GET && request.getPathParts().get(0).equals("deck")){
             return this.cardsController.showDeck(request);
-        }else if(request.getMethod() == Method.PUT && request.getPathParts().get(0)=="deck"){
+        }else if(request.getMethod() == Method.PUT && request.getPathParts().get(0).equals("deck")){
             return this.cardsController.configureDeck(request);
         }
 
