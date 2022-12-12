@@ -15,7 +15,7 @@ public class Card {
     @JsonAlias({"Element"})
     private String element;
     @JsonAlias({"PackageID"})
-    private int packageID;
+    private String packageID;
 
     public String getId() {
         return id;
@@ -57,11 +57,11 @@ public class Card {
         this.element = element;
     }
 
-    public int getPackageID() {
+    public String getPackageID() {
         return packageID;
     }
 
-    public void setPackageID(int packageID) {
+    public void setPackageID(String packageID) {
         this.packageID = packageID;
     }
 }

@@ -52,7 +52,7 @@ public class UserTest {
         urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
         int responseCode = urlConnection.getResponseCode();
 
-        if(responseCode== HttpURLConnection.HTTP_OK){
+        if(responseCode== 200){
             InputStream inputStream = urlConnection.getInputStream();
             InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);

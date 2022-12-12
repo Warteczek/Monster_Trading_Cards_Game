@@ -28,6 +28,7 @@ public class Main {
         router.addService("/packages", new PackageService());
         router.addService("/transactions", new TransactionService());
         router.addService("/cards", new CardsService());
+        router.addService("/deck", new CardsService());
 
 
         return router;
