@@ -98,20 +98,41 @@ public class CardsController extends Controller {
                 );
             }
 
-            //TODO add cards to deck
-
+            List<String> cardIDs = new ArrayList<String>();
             String requestBody=request.getBody();
 
-            List<String> cardIDs = new ArrayList<String>();
+            String[] splitRequest = requestBody.split(", \"");
+            if(splitRequest.length!=4){
+                return new Response(
+                        HttpStatus.BAD_REQUEST,
+                        ContentType.PLAIN_TEXT,
+                        "The provided deck did not include the required amount of cards"
+                );
+            }
+            for(int i=0; i<4; i++){
+                splitRequest[i] = splitRequest[i].replace("[", "");
+                splitRequest[i] = splitRequest[i].replace("]", "");
+                splitRequest[i] = splitRequest[i].replace("\"", "");
+                cardIDs.add(splitRequest[i]);
+            }
+
+            if(!this.cardsRepo.checkIfCardsBelongToUser(username, cardIDs, newUnit)){
+                return new Response(
+                        HttpStatus.FORBIDDEN,
+                        ContentType.PLAIN_TEXT,
+                        "At least one of the provided cards does not belong to the user or is not available."
+                );
+            }
 
             this.cardsRepo.addCardsToDeck(username, cardIDs, newUnit);
+
 
             newUnit.commit();
 
             return new Response(
                     HttpStatus.OK,
                     ContentType.PLAIN_TEXT,
-                    "A package has been successfully bought"
+                    "The deck has been successfully configured"
             );
 
         }catch(Exception e){
@@ -147,13 +168,34 @@ public class CardsController extends Controller {
                         "User can not be found"
                 );
             }
-            // TODO show Deck
+
+            List<Card> cards = this.cardsRepo.showDeckFromUser(username, newUnit);
+
+            if(cards.isEmpty()){
+                return new Response(
+                        HttpStatus.NO_CONTENT,
+                        ContentType.PLAIN_TEXT,
+                        "The request was fine, but the deck doesn't have any cards"
+                );
+            }
+            String cardsJSON = this.getObjectMapper().writeValueAsString(cards);
+            if(request.hasParams() && request.getParams().equals("format=plain")){
+                return new Response(
+                        HttpStatus.OK,
+                        ContentType.PLAIN_TEXT,
+                        cardsJSON
+                );
+            }else{
+                return new Response(
+                        HttpStatus.OK,
+                        ContentType.JSON,
+                        cardsJSON
+                );
+            }
 
         }catch(Exception e){
             e.printStackTrace();
         }
-
-        newUnit.rollback();
 
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,

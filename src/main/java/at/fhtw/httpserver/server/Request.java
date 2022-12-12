@@ -14,6 +14,12 @@ public class Request {
     private HeaderMap headerMap =  new HeaderMap();
     private String body;
 
+    private boolean hasParams;
+
+    public boolean hasParams() {
+        return hasParams;
+    }
+
     public String getServiceRoute(){
         if (this.pathParts == null ||
             this.pathParts.isEmpty()) {
@@ -29,7 +35,7 @@ public class Request {
 
     public void setUrlContent(String urlContent) {
         this.urlContent = urlContent;
-        Boolean hasParams = urlContent.indexOf("?") != -1;
+        hasParams = urlContent.indexOf("?") != -1;
 
         if (hasParams) {
             String[] pathParts =  urlContent.split("\\?");
