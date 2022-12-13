@@ -19,6 +19,7 @@ public class TradeService implements Service {
     }
     @Override
     public Response handleRequest(Request request) {
+
         if(request.getPathParts().size()==2){
             if(request.getMethod() == Method.DELETE) {
                 return this.tradeController.deleteTradingDeal(request);

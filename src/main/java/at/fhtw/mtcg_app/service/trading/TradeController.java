@@ -12,6 +12,9 @@ import at.fhtw.mtcg_app.controller.Controller;
 import at.fhtw.mtcg_app.model.Card;
 import at.fhtw.mtcg_app.model.Trade;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TradeController extends Controller {
     private TradingRepo tradingRepo;
     private UserRepo userRepo;
@@ -24,9 +27,50 @@ public class TradeController extends Controller {
     }
 
     public Response deleteTradingDeal(Request request) {
+        UnitOfWork newUnit = new UnitOfWork();
+        String username = request.getTokenUser();
+
+        if(username.equals("")){
+            return new Response(
+                    HttpStatus.UNAUTHORIZED,
+                    ContentType.PLAIN_TEXT,
+                    "Authentication information is missing or invalid"
+            );
+        }
+        // TODO deleteTradingDeal
+
+
+        newUnit.rollback();
+
+        return new Response(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ContentType.JSON,
+                "{ \"message\" : \"Internal Server Error\" }"
+        );
     }
 
     public Response executeTradingDeal(Request request) {
+
+        UnitOfWork newUnit = new UnitOfWork();
+        String username = request.getTokenUser();
+
+        if(username.equals("")){
+            return new Response(
+                    HttpStatus.UNAUTHORIZED,
+                    ContentType.PLAIN_TEXT,
+                    "Authentication information is missing or invalid"
+            );
+        }
+        // TODO executeTradingDeal
+
+
+        newUnit.rollback();
+
+        return new Response(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ContentType.JSON,
+                "{ \"message\" : \"Internal Server Error\" }"
+        );
     }
 
     public Response createTradingDeal(Request request) {
@@ -52,9 +96,19 @@ public class TradeController extends Controller {
             }
             Trade tradeDeal = this.getObjectMapper().readValue(request.getBody(), Trade.class);
 
-            //TODO checkCardsBelongsToUser and checkIfCardIsLockedInDeck
+            if(this.tradingRepo.tradingDealAlreadyExists(tradeDeal.getId(), newUnit)){
+                return new Response(
+                        HttpStatus.CONFLICT,
+                        ContentType.PLAIN_TEXT,
+                        "A deal with this deal ID already exists."
+                );
+            }
 
-            if(!this.cardsRepo.checkIfCardsBelongToUser(username, tradeDeal.getCardToTrade(), newUnit)){
+            List<String> tradeCard=new ArrayList<>();
+            tradeCard.add(tradeDeal.getCardToTrade());
+
+
+            if((!this.cardsRepo.checkIfCardsBelongToUser(username, tradeCard, newUnit)) || this.tradingRepo.checkCardIsLockedInDeck(tradeDeal.getCardToTrade(), newUnit)){
                 return new Response(
                         HttpStatus.FORBIDDEN,
                         ContentType.PLAIN_TEXT,
@@ -62,17 +116,79 @@ public class TradeController extends Controller {
                 );
             }
 
+
             this.tradingRepo.addTradingDeal(tradeDeal, newUnit);
 
+            newUnit.commit();
 
+            return new Response(
+                    HttpStatus.CREATED,
+                    ContentType.PLAIN_TEXT,
+                    "Trading deal successfully created"
+            );
 
         }catch (Exception e){
             e.printStackTrace();
         }
 
+        newUnit.rollback();
+
+        return new Response(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ContentType.JSON,
+                "{ \"message\" : \"Internal Server Error\" }"
+        );
+
     }
 
     public Response getTradingDeals(Request request) {
+        UnitOfWork newUnit = new UnitOfWork();
+        String username = request.getTokenUser();
 
+        if(username.equals("")){
+            return new Response(
+                    HttpStatus.UNAUTHORIZED,
+                    ContentType.PLAIN_TEXT,
+                    "Authentication information is missing or invalid"
+            );
+        }
+
+        try{
+            boolean userExists=this.userRepo.checkUserExists(username, newUnit);
+            if(!userExists){
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.PLAIN_TEXT,
+                        "User can not be found"
+                );
+            }
+
+            List<Trade> tradeDeals = this.tradingRepo.getTradingDeals(newUnit);
+
+            if(tradeDeals.isEmpty()){
+                return new Response(
+                        HttpStatus.NO_CONTENT,
+                        ContentType.PLAIN_TEXT,
+                        "The request was fine, but the user doesn't have any cards"
+                );
+            }
+            String cardsJSON = this.getObjectMapper().writeValueAsString(tradeDeals);
+
+            return new Response(
+                    HttpStatus.OK,
+                    ContentType.JSON,
+                    cardsJSON
+            );
+
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return new Response(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ContentType.JSON,
+                "{ \"message\" : \"Internal Server Error\" }"
+        );
     }
 }

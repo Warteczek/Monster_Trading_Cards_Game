@@ -67,8 +67,6 @@ public class CardsController extends Controller {
             e.printStackTrace();
         }
 
-        newUnit.rollback();
-
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ContentType.JSON,

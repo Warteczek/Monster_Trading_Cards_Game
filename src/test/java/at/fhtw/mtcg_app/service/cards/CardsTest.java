@@ -14,7 +14,6 @@ public class CardsTest {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
         urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
-        urlConnection.setDoOutput(true);
 
         int responseCode= urlConnection.getResponseCode();
         System.out.println(responseCode);
