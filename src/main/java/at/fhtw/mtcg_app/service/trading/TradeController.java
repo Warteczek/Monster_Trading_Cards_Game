@@ -37,8 +37,57 @@ public class TradeController extends Controller {
                     "Authentication information is missing or invalid"
             );
         }
-        // TODO deleteTradingDeal
+        try{
+            boolean userExists=this.userRepo.checkUserExists(username, newUnit);
+            if(!userExists){
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.PLAIN_TEXT,
+                        "User can not be found"
+                );
+            }
 
+            String dealID=request.getPathParts().get(1);
+
+            if(!this.tradingRepo.tradingDealAlreadyExists(dealID, newUnit)){
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.PLAIN_TEXT,
+                        "The provided deal ID was not found."
+                );
+            }
+
+            String cardToTrade= this.tradingRepo.getCardToTrade(dealID, newUnit);
+            if(cardToTrade.equals("")){
+                throw new Exception("Could not get card");
+            }
+            //List of strings is required, because otherwise the already existing method could not be used
+            List<String> tradeCard=new ArrayList<String>();
+            tradeCard.add(cardToTrade);
+
+
+            if(!this.cardsRepo.checkIfCardsBelongToUser(username, tradeCard, newUnit)){
+                return new Response(
+                        HttpStatus.FORBIDDEN,
+                        ContentType.PLAIN_TEXT,
+                        "The deal contains a card that is not owned by the user."
+                );
+            }
+
+
+            this.tradingRepo.deleteTradingDeal(dealID, newUnit);
+
+            newUnit.commit();
+
+            return new Response(
+                    HttpStatus.OK,
+                    ContentType.PLAIN_TEXT,
+                    "Trading deal successfully deleted"
+            );
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         newUnit.rollback();
 
@@ -61,8 +110,60 @@ public class TradeController extends Controller {
                     "Authentication information is missing or invalid"
             );
         }
-        // TODO executeTradingDeal
+        try {
+            boolean userExists = this.userRepo.checkUserExists(username, newUnit);
+            if (!userExists) {
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.PLAIN_TEXT,
+                        "User can not be found"
+                );
+            }
 
+            String dealID = request.getPathParts().get(1);
+
+            //if deal does not exist
+            if (!this.tradingRepo.tradingDealAlreadyExists(dealID, newUnit)) {
+                return new Response(
+                        HttpStatus.NOT_FOUND,
+                        ContentType.PLAIN_TEXT,
+                        "The provided deal ID was not found."
+                );
+            }
+
+
+
+            // checks if both cards have the correct user, if the requirements of the trade are met and if the cards are locked in the deck
+            //if something is wrong with the card from the creator of the deal, the deal gets deleted
+            if(checkIfTradeIsPossible(dealID, request.getBody(), username, newUnit)){
+
+                String newOwnerDealCard=username;
+                String newOwnerOfferCard=this.tradingRepo.getCreatorFromDeal(dealID, newUnit);
+                String offerCard=request.getBody();
+                String dealCard=this.tradingRepo.getCardToTrade(dealID, newUnit);
+
+                this.tradingRepo.executeTrade(dealID, newOwnerDealCard, newOwnerOfferCard, dealCard, offerCard, newUnit);
+
+                newUnit.commit();
+
+                return new Response(
+                        HttpStatus.OK,
+                        ContentType.PLAIN_TEXT,
+                        "Trading deal successfully executed."
+                );
+            }else{
+                newUnit.commit();
+
+                return new Response(
+                        HttpStatus.FORBIDDEN,
+                        ContentType.PLAIN_TEXT,
+                        "The offered card is not owned by the user, or the requirements are not met (Type, MinimumDamage), or the offered card is locked in the deck."
+                );
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
 
         newUnit.rollback();
 
@@ -72,6 +173,8 @@ public class TradeController extends Controller {
                 "{ \"message\" : \"Internal Server Error\" }"
         );
     }
+
+
 
     public Response createTradingDeal(Request request) {
         UnitOfWork newUnit = new UnitOfWork();
@@ -117,7 +220,7 @@ public class TradeController extends Controller {
             }
 
 
-            this.tradingRepo.addTradingDeal(tradeDeal, newUnit);
+            this.tradingRepo.addTradingDeal(tradeDeal, username, newUnit);
 
             newUnit.commit();
 
@@ -190,5 +293,54 @@ public class TradeController extends Controller {
                 ContentType.JSON,
                 "{ \"message\" : \"Internal Server Error\" }"
         );
+    }
+
+    private boolean checkIfTradeIsPossible(String dealID, String cardFromOfferID, String userFromOffer, UnitOfWork newUnit) throws Exception {
+        try{
+            String cardFromDealID=this.tradingRepo.getCardToTrade(dealID, newUnit);
+
+
+
+            if(this.tradingRepo.checkCardIsLockedInDeck(cardFromOfferID, newUnit)){
+                return false;
+            }
+
+            if(this.tradingRepo.checkCardIsLockedInDeck(cardFromDealID, newUnit)){
+                this.tradingRepo.deleteTradingDeal(dealID, newUnit);
+                return false;
+            }
+
+
+            List<String> cardFromDealList =new ArrayList<>();
+            cardFromDealList.add(cardFromDealID);
+            List<String> cardFromOfferList =new ArrayList<>();
+            cardFromOfferList.add(cardFromOfferID);
+
+            String creatorOfDeal=this.tradingRepo.getCreatorFromDeal(dealID, newUnit);
+
+
+
+            if(!this.cardsRepo.checkIfCardsBelongToUser(userFromOffer, cardFromOfferList, newUnit)){
+                return false;
+            }
+
+            if(!this.cardsRepo.checkIfCardsBelongToUser(creatorOfDeal, cardFromDealList, newUnit)){
+                this.tradingRepo.deleteTradingDeal(dealID, newUnit);
+                return false;
+            }
+
+
+            Trade trade=this.tradingRepo.getTrade(dealID, newUnit);
+            Card card=this.cardsRepo.getCard(cardFromOfferID, newUnit);
+            String requiredType= trade.getType(), actualType=card.getType();
+            int requiredDamage= trade.getMinDamage(), actualDamage=card.getDamage();
+
+            if(requiredDamage>actualDamage || !requiredType.equals(actualType)){
+                return false;
+            }
+        }catch(Exception e){
+            throw new Exception("Could not check if trade is possible");
+        }
+        return true;
     }
 }

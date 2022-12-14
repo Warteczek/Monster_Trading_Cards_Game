@@ -142,5 +142,45 @@ public class CardsRepo {
 
         return cards;
     }
+
+    public Card getCard(String cardID, UnitOfWork newUnit) throws Exception {
+
+        Card card=new Card();
+
+        String name="",  type="", id="", element_type="", package_id="";
+        int damage = 0;
+
+        try{
+            PreparedStatement statement= newUnit.getStatement("SELECT * FROM cards WHERE id=?");
+            statement.setString(1, cardID);
+
+            ResultSet resultSet= statement.executeQuery();
+
+            if(resultSet.next()){
+                name = resultSet.getString("name");
+                type = resultSet.getString("type");
+                id = resultSet.getString("id");
+                element_type = resultSet.getString("element_type");
+                package_id = resultSet.getString("package_id");
+                damage = resultSet.getInt("damage");
+
+
+                card.setName(name);
+                card.setType(type);
+                card.setId(id);
+                card.setElement(element_type);
+                card.setPackageID(package_id);
+                card.setDamage(damage);
+            }
+
+
+        } catch(SQLException exception){
+            exception.printStackTrace();
+            throw new Exception("Could not get cards");
+        }
+
+        return card;
+    }
+
 }
 
