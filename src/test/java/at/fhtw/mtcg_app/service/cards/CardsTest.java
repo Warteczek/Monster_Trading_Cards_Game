@@ -14,7 +14,6 @@ public class CardsTest {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
         urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
-        urlConnection.setDoOutput(true);
 
         int responseCode= urlConnection.getResponseCode();
         System.out.println(responseCode);
@@ -47,6 +46,26 @@ public class CardsTest {
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
         printWriter.write("[\"a1618f1e-4f4c-4e09-9647-87e16f1edd2d\", \"ce6bcaee-47e1-4011-a49e-5a4d7d4245f3\", \"74635fae-8ad3-4295-9139-320ab89c2844\", \"70962948-2bf7-44a9-9ded-8c68eeac7793\"]");
+        printWriter.close();
+
+        InputStream inputStream = urlConnection.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+        Assertions.assertEquals(bufferedReader.readLine(), "The deck has been successfully configured");
+
+        bufferedReader.close();
+    }
+    @Test
+    void testConfigureDeckKienboec() throws IOException {
+        URL url = new URL("http://localhost:10001/deck");
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("PUT");
+        urlConnection.setRequestProperty("Authorization", "Basic kienboec-mtcgToken");
+        urlConnection.setDoOutput(true);
+        OutputStream outputStream = urlConnection.getOutputStream();
+        PrintWriter printWriter = new PrintWriter(outputStream);
+        printWriter.write("[\"166c1fd5-4dcb-41a8-91cb-f45dcd57cef3\", \"2c98cd06-518b-464c-b911-8d787216cddd\", \"fc305a7a-36f7-4d30-ad27-462ca0445649\", \"dcd93250-25a7-4dca-85da-cad2789f7198\"]");
         printWriter.close();
 
         InputStream inputStream = urlConnection.getInputStream();

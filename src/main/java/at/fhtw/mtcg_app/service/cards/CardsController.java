@@ -9,7 +9,6 @@ import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.mtcg_app.controller.Controller;
 import at.fhtw.mtcg_app.model.Card;
-import at.fhtw.mtcg_app.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,8 +66,6 @@ public class CardsController extends Controller {
         }catch(Exception e){
             e.printStackTrace();
         }
-
-        newUnit.rollback();
 
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
