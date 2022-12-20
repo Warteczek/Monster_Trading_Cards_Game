@@ -2,19 +2,12 @@ package at.fhtw.mtcg_app.service.packages;
 
 import at.fhtw.dataAccessLayer.UnitOfWork;
 import at.fhtw.dataAccessLayer.repositories.PackageRepo;
-import at.fhtw.dataAccessLayer.repositories.UserRepo;
 import at.fhtw.httpserver.http.ContentType;
 import at.fhtw.httpserver.http.HttpStatus;
 import at.fhtw.httpserver.server.Request;
 import at.fhtw.httpserver.server.Response;
 import at.fhtw.mtcg_app.controller.Controller;
 import at.fhtw.mtcg_app.model.Card;
-import at.fhtw.mtcg_app.model.User;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.List;
 
 public class PackageController extends Controller {
 

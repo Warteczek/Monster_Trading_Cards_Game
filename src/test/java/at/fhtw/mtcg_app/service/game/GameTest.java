@@ -67,9 +67,9 @@ public class GameTest {
 
     @Test
     void testGameFirstPlayer() throws IOException {
-        URL url = new URL("http://localhost:10001/battle");
+        URL url = new URL("http://localhost:10001/battles");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        urlConnection.setRequestMethod("GET");
+        urlConnection.setRequestMethod("POST");
         urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
         urlConnection.setDoOutput(true);
         int responseCode= urlConnection.getResponseCode();
@@ -94,9 +94,9 @@ public class GameTest {
 
     @Test
     void testGameSecondPlayer() throws IOException {
-        URL url = new URL("http://localhost:10001/battle");
+        URL url = new URL("http://localhost:10001/battles");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        urlConnection.setRequestMethod("GET");
+        urlConnection.setRequestMethod("POST");
         urlConnection.setRequestProperty("Authorization", "Basic kienboec-mtcgToken");
         urlConnection.setDoOutput(true);
         int responseCode= urlConnection.getResponseCode();
