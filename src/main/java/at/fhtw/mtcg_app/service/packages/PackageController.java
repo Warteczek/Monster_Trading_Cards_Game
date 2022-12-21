@@ -36,6 +36,19 @@ public class PackageController extends Controller {
 
             Card[] cards = this.getObjectMapper().readValue(request.getBody(), Card[].class);
             for (Card card : cards){
+                if(card.getName().contains("Fire")){
+                    card.setElement("fire");
+                }else if(card.getName().contains("Water")){
+                    card.setElement("water");
+                }else{
+                    card.setElement("normal");
+                }
+
+                if(card.getName().contains("Spell")){
+                    card.setType("spell");
+                }else{
+                    card.setElement("monster");
+                }
 
                 if(this.packageRepo.checkCardExists(card.getId(), newUnit)){
                     return new Response(

@@ -138,24 +138,65 @@ public class GameController extends Controller {
                         "Players have to configure their decks"
                 );
             }
-            List<Card> updateFirstPlayerDeck=firstPlayerDeck;
-            List<Card> updateSecondPlayerDeck=secondPlayerDeck;
+            List<Card> updateFirstPlayerDeck=new ArrayList<>(firstPlayerDeck);
+            List<Card> updateSecondPlayerDeck=new ArrayList<>(secondPlayerDeck);
             int roundsPlayed=0;
             String newContent="";
+            String specialityContent="";
             String roundWinner="";
+            String winner="";
+            String loser="";
             do{
                 roundWinner="";
+                specialityContent="";
                 //select random cards
                 Card player1Card = selectRandomCardFromDeck(updateFirstPlayerDeck);
                 Card player2Card = selectRandomCardFromDeck(updateSecondPlayerDeck);
+
 
                 updateFirstPlayerDeck.remove(player1Card);
                 updateSecondPlayerDeck.remove(player2Card);
 
 
-                //TODO specialities
+                // specialities
+                if(player1Card.getName().contains("Goblin") && player2Card.getName().contains("Dragon")){
+                    player1Card.setDamage(0);
+                    specialityContent="\nGoblin is to afraid to attack Dragon => ";
+                }else if(player2Card.getName().contains("Goblin") && player1Card.getName().contains("Dragon")){
+                    player2Card.setDamage(0);
+                    specialityContent="\nGoblin is to afraid to attack Dragon => ";
+                }
+                else if(player1Card.getName().contains("Wizzard") && player2Card.getName().contains("Orks")){
+                    player2Card.setDamage(0);
+                    specialityContent="\nWizzard controls Ork => ";
+                }
+                else if(player2Card.getName().contains("Wizzard") && player1Card.getName().contains("Orks")){
+                    player1Card.setDamage(0);
+                    specialityContent="\nWizzard controls Ork => ";
+                }
+                else if(player1Card.getName().contains("Knight") && player2Card.getElement().equals("water") && player2Card.getType().equals("spell")){
+                    player1Card.setDamage(0);
+                    specialityContent="\nKnight drowns => ";
+                }
+                else if(player2Card.getName().contains("Knight") && player1Card.getElement().equals("water") && player1Card.getType().equals("spell")){
+                    player2Card.setDamage(0);
+                    specialityContent="\nKnight drowns => ";
+                }else if(player1Card.getName().contains("Kraken") && player2Card.getType().equals("spell")){
+                    player2Card.setDamage(0);
+                    specialityContent="\nKraken is immune against spells => ";
+                }else if(player2Card.getName().contains("Kraken") && player1Card.getType().equals("spell")){
+                    player1Card.setDamage(0);
+                    specialityContent="\nKraken is immune against spells => ";
+                }else if(player1Card.getName().contains("Elves") && player1Card.getElement().equals("fire") && player2Card.getName().contains("Dragon")){
+                    player2Card.setDamage(0);
+                    specialityContent="\nFireElve evades dragon => ";
+                }else if(player2Card.getName().contains("Elves") && player2Card.getElement().equals("fire") && player1Card.getName().contains("Dragon")){
+                    player1Card.setDamage(0);
+                    specialityContent="\nFireElve evades dragon => ";
+                }
 
 
+                // battle logic
                 if(player1Card.getType().equals("monster") && player2Card.getType().equals("monster")){
                     if(player1Card.getDamage()>player2Card.getDamage()){
                         roundWinner="player1";
@@ -169,7 +210,6 @@ public class GameController extends Controller {
                     }
 
                 }else{
-                    // TODO player loses with 1 card left
                     if(player1Card.getElement().equals("water") && player2Card.getElement().equals("fire")){
 
                         double player1Damage=2*player1Card.getDamage();
@@ -269,25 +309,30 @@ public class GameController extends Controller {
                     }
                 }
 
-
                 // card of loser to winner
                 if(roundWinner.equals("player1")){
                     updateFirstPlayerDeck.add(player2Card);
+                    updateFirstPlayerDeck.add(player1Card);
                 }else if(roundWinner.equals("player2")){
                     updateSecondPlayerDeck.add(player1Card);
+                    updateSecondPlayerDeck.add(player2Card);
                 }else{
                     updateFirstPlayerDeck.add(player1Card);
                     updateSecondPlayerDeck.add(player2Card);
                 }
 
-                responseContent= responseContent + newContent;
+                responseContent= responseContent + specialityContent + newContent;
 
                 if(updateFirstPlayerDeck.isEmpty()){
+                    winner=secondPlayer;
+                    loser=firstPlayer;
                     responseContent= responseContent + "\n\n"+secondPlayer+" wins!!!";
 
                     break;
                 }
                 if(updateSecondPlayerDeck.isEmpty()){
+                    winner=firstPlayer;
+                    loser=secondPlayer;
                     responseContent= responseContent + "\n\n"+firstPlayer+" wins!!!";
 
                     break;
@@ -296,11 +341,18 @@ public class GameController extends Controller {
                 roundsPlayed++;
             }while(roundsPlayed<100 || updateFirstPlayerDeck.isEmpty() || updateSecondPlayerDeck.isEmpty());
 
-            // TODO cards of loser to winner
+            if(!winner.equals("")){
+                if(loser.equals(secondPlayer)){
+                    this.gameRepo.awardCardsToWinner(winner,loser, secondPlayerDeck, newUnit);
+                }else{
+                    this.gameRepo.awardCardsToWinner(winner,loser, firstPlayerDeck, newUnit);
+                }
 
-            //TODO update ELO
+                this.gameRepo.updateELO(winner,loser, newUnit);
+            }
 
 
+            newUnit.commit();
 
             return new Response(
                     HttpStatus.OK,
@@ -311,7 +363,7 @@ public class GameController extends Controller {
             e.printStackTrace();
         }
 
-
+        newUnit.rollback();
 
 
         return new Response(
