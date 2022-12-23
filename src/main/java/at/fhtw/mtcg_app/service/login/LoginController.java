@@ -26,6 +26,7 @@ public class LoginController extends Controller {
             String content=this.userRepo.checkCredentials(user, newUnit);
 
             if(content=="None"){
+                newUnit.close();
                 return new Response(
                         HttpStatus.UNAUTHORIZED,
                         ContentType.PLAIN_TEXT,
@@ -33,6 +34,7 @@ public class LoginController extends Controller {
                 );
             }
 
+            newUnit.close();
             return new Response(
                     HttpStatus.OK,
                     ContentType.PLAIN_TEXT,
@@ -42,6 +44,7 @@ public class LoginController extends Controller {
             e.printStackTrace();
         }
 
+        newUnit.close();
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ContentType.JSON,

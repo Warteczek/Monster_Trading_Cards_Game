@@ -41,4 +41,12 @@ public class UnitOfWork {
             e.printStackTrace();
         }
     }
+    public void close() {
+        try{
+            this.connection.close();
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
+    }
 }

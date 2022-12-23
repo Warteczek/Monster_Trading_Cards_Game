@@ -35,6 +35,7 @@ public class GameController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -44,6 +45,7 @@ public class GameController extends Controller {
         try {
             boolean userExists = this.userRepo.checkUserExists(username, newUnit);
             if (!userExists) {
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -54,19 +56,18 @@ public class GameController extends Controller {
             Stats stats = this.userRepo.getUserStats(username, newUnit);
             String userStatsJSON = this.getObjectMapper().writeValueAsString(stats);
 
+            newUnit.close();
             return new Response(
                     HttpStatus.OK,
                     ContentType.JSON,
                     userStatsJSON
             );
 
-
-
-
         }catch(Exception e){
             e.printStackTrace();
         }
 
+        newUnit.close();
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ContentType.JSON,
@@ -79,6 +80,7 @@ public class GameController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -88,6 +90,7 @@ public class GameController extends Controller {
         try {
             boolean userExists = this.userRepo.checkUserExists(username, newUnit);
             if (!userExists) {
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -99,6 +102,7 @@ public class GameController extends Controller {
             scoreboardList=this.userRepo.getScoreboard(username, newUnit);
             String scoreboard = this.getObjectMapper().writeValueAsString(scoreboardList);
 
+            newUnit.close();
             return new Response(
                     HttpStatus.OK,
                     ContentType.JSON,
@@ -109,6 +113,8 @@ public class GameController extends Controller {
         }catch(Exception e){
             e.printStackTrace();
         }
+
+        newUnit.close();
 
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
@@ -132,6 +138,7 @@ public class GameController extends Controller {
             secondPlayerDeck=this.cardsRepo.showDeckFromUser(secondPlayer, newUnit);
 
             if(firstPlayerDeck.isEmpty() || secondPlayerDeck.isEmpty()){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NO_CONTENT,
                         ContentType.PLAIN_TEXT,

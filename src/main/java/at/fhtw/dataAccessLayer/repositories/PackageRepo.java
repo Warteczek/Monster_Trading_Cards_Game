@@ -76,7 +76,8 @@ public class PackageRepo {
     public List<String> getPackages(UnitOfWork newUnit) throws Exception {
         List<String> allPackages= new ArrayList<String>();
         try{
-            PreparedStatement statement= newUnit.getStatement("SELECT DISTINCT package_id FROM cards");
+            PreparedStatement statement= newUnit.getStatement("SELECT DISTINCT package_id FROM cards WHERE buyable=?");
+            statement.setBoolean(1, true);
 
             ResultSet resultSet= statement.executeQuery();
             while (resultSet.next()){
@@ -91,6 +92,13 @@ public class PackageRepo {
 
     public void addPackageToStack(String username, String buyPackageID, UnitOfWork newUnit) throws Exception {
         try{
+
+            PreparedStatement statementUpdate= newUnit.getStatement("UPDATE cards SET buyable=? WHERE package_id=?");
+            statementUpdate.setBoolean(1, false);
+            statementUpdate.setString(2, buyPackageID);
+            statementUpdate.executeUpdate();
+
+
             PreparedStatement statementSelect= newUnit.getStatement("SELECT id FROM cards WHERE package_id=?");
             statementSelect.setString(1, buyPackageID);
             ResultSet resultSet=statementSelect.executeQuery();

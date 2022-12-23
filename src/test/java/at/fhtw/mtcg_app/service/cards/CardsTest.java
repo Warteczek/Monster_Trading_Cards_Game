@@ -35,6 +35,23 @@ public class CardsTest {
         }
     }
 
+    @Test
+    void testShowCardsDeckIsNotConfigured() throws IOException {
+        URL url = new URL("http://localhost:10001/cards");
+        HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("GET");
+        urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
+
+        int responseCode= urlConnection.getResponseCode();
+        System.out.println(responseCode);
+
+        if(responseCode== HttpURLConnection.HTTP_NO_CONTENT){
+            Assertions.assertFalse(false);
+        }else{
+            Assertions.assertFalse(true);
+        }
+    }
+
 
     @Test
     void testConfigureDeck() throws IOException {

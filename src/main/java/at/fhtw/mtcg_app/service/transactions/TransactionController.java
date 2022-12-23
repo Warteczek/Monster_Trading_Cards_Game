@@ -29,6 +29,7 @@ public class TransactionController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -39,6 +40,7 @@ public class TransactionController extends Controller {
         try{
             boolean userExists=this.userRepo.checkUserExists(username, newUnit);
             if(!userExists){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -49,6 +51,7 @@ public class TransactionController extends Controller {
             boolean userHasEnoughMoney=this.userRepo.checkUserHasEnoughMoneyForPackage(username, newUnit);
 
             if(!userHasEnoughMoney){
+                newUnit.close();
                 return new Response(
                         HttpStatus.FORBIDDEN,
                         ContentType.PLAIN_TEXT,
@@ -63,7 +66,7 @@ public class TransactionController extends Controller {
 
             //checks if there is at least one package
             if(packageIDs.isEmpty()){
-                System.out.println("Empty");
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -74,6 +77,7 @@ public class TransactionController extends Controller {
 
             //selects a random package from all possible Packages
             String buyPackageID=selectRandomPackage(packageIDs);
+
 
             //subtracts the amount of coins, that a package costs from the users coins
             this.userRepo.subtractPackageCoinsFromUser(username, newUnit);

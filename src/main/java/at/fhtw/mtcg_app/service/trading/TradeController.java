@@ -31,6 +31,7 @@ public class TradeController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -40,6 +41,7 @@ public class TradeController extends Controller {
         try{
             boolean userExists=this.userRepo.checkUserExists(username, newUnit);
             if(!userExists){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -50,6 +52,7 @@ public class TradeController extends Controller {
             String dealID=request.getPathParts().get(1);
 
             if(!this.tradingRepo.tradingDealAlreadyExists(dealID, newUnit)){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -67,6 +70,7 @@ public class TradeController extends Controller {
 
 
             if(!this.cardsRepo.checkIfCardsBelongToUser(username, tradeCard, newUnit)){
+                newUnit.close();
                 return new Response(
                         HttpStatus.FORBIDDEN,
                         ContentType.PLAIN_TEXT,
@@ -104,6 +108,7 @@ public class TradeController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -113,6 +118,7 @@ public class TradeController extends Controller {
         try {
             boolean userExists = this.userRepo.checkUserExists(username, newUnit);
             if (!userExists) {
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -124,6 +130,7 @@ public class TradeController extends Controller {
 
             //if deal does not exist
             if (!this.tradingRepo.tradingDealAlreadyExists(dealID, newUnit)) {
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -181,6 +188,7 @@ public class TradeController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -191,6 +199,7 @@ public class TradeController extends Controller {
         try{
             boolean userExists=this.userRepo.checkUserExists(username, newUnit);
             if(!userExists){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -200,6 +209,7 @@ public class TradeController extends Controller {
             Trade tradeDeal = this.getObjectMapper().readValue(request.getBody(), Trade.class);
 
             if(this.tradingRepo.tradingDealAlreadyExists(tradeDeal.getId(), newUnit)){
+                newUnit.close();
                 return new Response(
                         HttpStatus.CONFLICT,
                         ContentType.PLAIN_TEXT,
@@ -212,6 +222,7 @@ public class TradeController extends Controller {
 
 
             if((!this.cardsRepo.checkIfCardsBelongToUser(username, tradeCard, newUnit)) || this.tradingRepo.checkCardIsLockedInDeck(tradeDeal.getCardToTrade(), newUnit)){
+                newUnit.close();
                 return new Response(
                         HttpStatus.FORBIDDEN,
                         ContentType.PLAIN_TEXT,
@@ -249,6 +260,7 @@ public class TradeController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -259,6 +271,7 @@ public class TradeController extends Controller {
         try{
             boolean userExists=this.userRepo.checkUserExists(username, newUnit);
             if(!userExists){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -269,6 +282,7 @@ public class TradeController extends Controller {
             List<Trade> tradeDeals = this.tradingRepo.getTradingDeals(newUnit);
 
             if(tradeDeals.isEmpty()){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NO_CONTENT,
                         ContentType.PLAIN_TEXT,
@@ -277,6 +291,7 @@ public class TradeController extends Controller {
             }
             String cardsJSON = this.getObjectMapper().writeValueAsString(tradeDeals);
 
+            newUnit.close();
             return new Response(
                     HttpStatus.OK,
                     ContentType.JSON,
@@ -288,6 +303,7 @@ public class TradeController extends Controller {
             e.printStackTrace();
         }
 
+        newUnit.close();
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ContentType.JSON,

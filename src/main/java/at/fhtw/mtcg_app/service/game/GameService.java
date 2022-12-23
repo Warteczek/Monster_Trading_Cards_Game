@@ -56,6 +56,7 @@ public class GameService implements Service {
             Response response;
 
             //check if there are open battles to join, if there are none, generate one
+            // TODO synchronize this
             if(openBattles.isEmpty()){
                 do{
                     battleID=generateBattleID(12);

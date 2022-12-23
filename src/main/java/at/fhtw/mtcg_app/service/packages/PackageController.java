@@ -20,6 +20,7 @@ public class PackageController extends Controller {
         UnitOfWork newUnit = new UnitOfWork();
         try {
             if(!request.checkAdminToken()){
+                newUnit.close();
                 return new Response(
                         HttpStatus.FORBIDDEN,
                         ContentType.PLAIN_TEXT,
@@ -51,6 +52,7 @@ public class PackageController extends Controller {
                 }
 
                 if(this.packageRepo.checkCardExists(card.getId(), newUnit)){
+                    newUnit.close();
                     return new Response(
                             HttpStatus.CONFLICT,
                             ContentType.PLAIN_TEXT,

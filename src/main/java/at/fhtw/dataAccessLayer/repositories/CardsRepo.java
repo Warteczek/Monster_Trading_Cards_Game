@@ -84,11 +84,19 @@ public class CardsRepo {
 
             ResultSet resultSet= statement.executeQuery();
             if (resultSet.next()){
+                //selects all card IDs
                 String firstCard_ID=resultSet.getString("firstCard_ID");
                 String secondCard_ID =resultSet.getString("secondCard_ID");
                 String thirdCard_ID=resultSet.getString("thirdCard_ID");
                 String fourthCard_ID=resultSet.getString("fourthCard_ID");
 
+                //if deck is not configured
+                if(firstCard_ID==null || secondCard_ID==null || thirdCard_ID==null || fourthCard_ID==null){
+                    return deckCards;
+                }
+
+
+                //selects all data from cards
                 PreparedStatement statementCards= newUnit.getStatement("SELECT * FROM cards WHERE id=? OR id=? OR id=? OR id=?");
                 statementCards.setString(1, firstCard_ID);
                 statementCards.setString(2, secondCard_ID);

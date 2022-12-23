@@ -25,9 +25,11 @@ public class CardsController extends Controller {
 
     public Response showCards(Request request) {
         UnitOfWork newUnit = new UnitOfWork();
+
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -38,6 +40,7 @@ public class CardsController extends Controller {
         try{
             boolean userExists=this.userRepo.checkUserExists(username, newUnit);
             if(!userExists){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -48,6 +51,7 @@ public class CardsController extends Controller {
             List<Card> cards = this.cardsRepo.getCards(username, newUnit);
 
             if(cards.isEmpty()){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NO_CONTENT,
                         ContentType.PLAIN_TEXT,
@@ -56,6 +60,7 @@ public class CardsController extends Controller {
             }
             String cardsJSON = this.getObjectMapper().writeValueAsString(cards);
 
+            newUnit.close();
             return new Response(
                     HttpStatus.OK,
                     ContentType.JSON,
@@ -67,6 +72,8 @@ public class CardsController extends Controller {
             e.printStackTrace();
         }
 
+
+        newUnit.close();
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ContentType.JSON,
@@ -79,6 +86,7 @@ public class CardsController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -88,6 +96,7 @@ public class CardsController extends Controller {
         try{
             boolean userExists=this.userRepo.checkUserExists(username, newUnit);
             if(!userExists){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -100,6 +109,7 @@ public class CardsController extends Controller {
 
             String[] splitRequest = requestBody.split(", \"");
             if(splitRequest.length!=4){
+                newUnit.close();
                 return new Response(
                         HttpStatus.BAD_REQUEST,
                         ContentType.PLAIN_TEXT,
@@ -114,6 +124,7 @@ public class CardsController extends Controller {
             }
 
             if(!this.cardsRepo.checkIfCardsBelongToUser(username, cardIDs, newUnit)){
+                newUnit.close();
                 return new Response(
                         HttpStatus.FORBIDDEN,
                         ContentType.PLAIN_TEXT,
@@ -150,6 +161,7 @@ public class CardsController extends Controller {
         String username = request.getTokenUser();
 
         if(username.equals("")){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -159,6 +171,7 @@ public class CardsController extends Controller {
         try{
             boolean userExists=this.userRepo.checkUserExists(username, newUnit);
             if(!userExists){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -169,6 +182,7 @@ public class CardsController extends Controller {
             List<Card> cards = this.cardsRepo.showDeckFromUser(username, newUnit);
 
             if(cards.isEmpty()){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NO_CONTENT,
                         ContentType.PLAIN_TEXT,
@@ -176,6 +190,7 @@ public class CardsController extends Controller {
                 );
             }
             String cardsJSON = this.getObjectMapper().writeValueAsString(cards);
+            newUnit.close();
             if(request.hasParams() && request.getParams().equals("format=plain")){
                 return new Response(
                         HttpStatus.OK,
@@ -194,6 +209,7 @@ public class CardsController extends Controller {
             e.printStackTrace();
         }
 
+        newUnit.close();
         return new Response(
                 HttpStatus.INTERNAL_SERVER_ERROR,
                 ContentType.JSON,

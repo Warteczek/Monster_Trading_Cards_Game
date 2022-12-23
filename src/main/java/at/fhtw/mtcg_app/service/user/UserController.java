@@ -54,6 +54,7 @@ public class UserController extends Controller {
     public Response updateUser(Request request){
         UnitOfWork newUnit = new UnitOfWork();
         if(!request.checkAuthenticationToken()){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -65,6 +66,7 @@ public class UserController extends Controller {
 
             String username= request.getPathParts().get(1);
             if(!this.userRepo.checkUserExists(username, newUnit)){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -99,6 +101,7 @@ public class UserController extends Controller {
     public Response getUserdata(Request request) {
         UnitOfWork newUnit = new UnitOfWork();
         if(!request.checkAuthenticationToken()){
+            newUnit.close();
             return new Response(
                     HttpStatus.UNAUTHORIZED,
                     ContentType.PLAIN_TEXT,
@@ -109,6 +112,7 @@ public class UserController extends Controller {
         String username= request.getPathParts().get(1);
         try {
             if(!this.userRepo.checkUserExists(username, newUnit)){
+                newUnit.close();
                 return new Response(
                         HttpStatus.NOT_FOUND,
                         ContentType.PLAIN_TEXT,
@@ -118,6 +122,8 @@ public class UserController extends Controller {
             User user = this.userRepo.getUserData(username, newUnit);
             String userDataJSON = this.getObjectMapper().writeValueAsString(user);
 
+            newUnit.close();
+
             return new Response(
                     HttpStatus.OK,
                     ContentType.JSON,
@@ -125,11 +131,13 @@ public class UserController extends Controller {
             );
         } catch (Exception e) {
             e.printStackTrace();
-            return new Response(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    ContentType.JSON,
-                    "{ \"message\" : \"Internal Server Error\" }"
-            );
         }
+
+        newUnit.close();
+        return new Response(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ContentType.JSON,
+                "{ \"message\" : \"Internal Server Error\" }"
+        );
     }
 }
