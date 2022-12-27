@@ -48,7 +48,7 @@ public class PackageController extends Controller {
                 if(card.getName().contains("Spell")){
                     card.setType("spell");
                 }else{
-                    card.setElement("monster");
+                    card.setType("monster");
                 }
 
                 if(this.packageRepo.checkCardExists(card.getId(), newUnit)){

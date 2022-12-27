@@ -14,8 +14,11 @@ import at.fhtw.mtcg_app.model.User;
 import at.fhtw.mtcg_app.service.trading.TradeController;
 
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class GameService implements Service {
+
+    private ReentrantLock mutex = new ReentrantLock();
 
     private final GameController gameController;
 
@@ -62,10 +65,16 @@ public class GameService implements Service {
                     battleID=generateBattleID(12);
                 }while(battleIDExists(battleID));
 
-                openBattles.add(battleID);
-                //adds the current player
-                waitingPlayers.put(battleID, currentPlayer);
-                battleTracker.put(battleID, null);
+                try{
+                    mutex.lock();
+                    openBattles.add(battleID);
+                    //adds the current player
+                    waitingPlayers.put(battleID, currentPlayer);
+                    battleTracker.put(battleID, null);
+                }finally{
+                    mutex.unlock();
+                }
+
                 while (!checkIfBattleFinished(battleID)){
                     try{
                         Thread.sleep(500);
@@ -76,8 +85,15 @@ public class GameService implements Service {
                 response=battleTracker.get(battleID);
             } //if there is a battle to join, join the battle and run it
             else{
-                battleID=openBattles.get(0);
-                openBattles.remove(0);
+                try{
+                    mutex.lock();
+                    battleID=openBattles.get(0);
+                    openBattles.remove(0);
+                }
+                finally{
+                    mutex.unlock();
+                }
+
                 List<String> playersInBattle=new ArrayList<>();
                 playersInBattle.add(waitingPlayers.get(battleID));
                 playersInBattle.add(currentPlayer);

@@ -330,6 +330,7 @@ public class GameController extends Controller {
 
                 responseContent= responseContent + specialityContent + newContent;
 
+
                 if(updateFirstPlayerDeck.isEmpty()){
                     winner=secondPlayer;
                     loser=firstPlayer;
@@ -346,7 +347,13 @@ public class GameController extends Controller {
                 }
 
                 roundsPlayed++;
+                if(roundsPlayed==100){
+                    responseContent= responseContent + "\n\n IT ENDS IN A DRAW!!!";
+                }
+
             }while(roundsPlayed<100 || updateFirstPlayerDeck.isEmpty() || updateSecondPlayerDeck.isEmpty());
+
+
 
             if(!winner.equals("")){
                 if(loser.equals(secondPlayer)){
@@ -357,7 +364,6 @@ public class GameController extends Controller {
 
                 this.gameRepo.updateELO(winner,loser, newUnit);
             }
-
 
             newUnit.commit();
 

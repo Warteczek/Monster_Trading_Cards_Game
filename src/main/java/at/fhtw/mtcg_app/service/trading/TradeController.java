@@ -149,6 +149,7 @@ public class TradeController extends Controller {
                 String offerCard=request.getBody();
                 String dealCard=this.tradingRepo.getCardToTrade(dealID, newUnit);
 
+
                 this.tradingRepo.executeTrade(dealID, newOwnerDealCard, newOwnerOfferCard, dealCard, offerCard, newUnit);
 
                 newUnit.commit();
@@ -312,6 +313,7 @@ public class TradeController extends Controller {
     }
 
     private boolean checkIfTradeIsPossible(String dealID, String cardFromOfferID, String userFromOffer, UnitOfWork newUnit) throws Exception {
+
         try{
             String cardFromDealID=this.tradingRepo.getCardToTrade(dealID, newUnit);
 
@@ -321,10 +323,12 @@ public class TradeController extends Controller {
                 return false;
             }
 
+
             if(this.tradingRepo.checkCardIsLockedInDeck(cardFromDealID, newUnit)){
                 this.tradingRepo.deleteTradingDeal(dealID, newUnit);
                 return false;
             }
+
 
 
             List<String> cardFromDealList =new ArrayList<>();
@@ -334,16 +338,21 @@ public class TradeController extends Controller {
 
             String creatorOfDeal=this.tradingRepo.getCreatorFromDeal(dealID, newUnit);
 
+            if(creatorOfDeal.equals(userFromOffer)){
+                return false;
+            }
 
 
             if(!this.cardsRepo.checkIfCardsBelongToUser(userFromOffer, cardFromOfferList, newUnit)){
                 return false;
             }
 
+
             if(!this.cardsRepo.checkIfCardsBelongToUser(creatorOfDeal, cardFromDealList, newUnit)){
                 this.tradingRepo.deleteTradingDeal(dealID, newUnit);
                 return false;
             }
+
 
 
             Trade trade=this.tradingRepo.getTrade(dealID, newUnit);
@@ -354,9 +363,11 @@ public class TradeController extends Controller {
             if(requiredDamage>actualDamage || !requiredType.equals(actualType)){
                 return false;
             }
+
         }catch(Exception e){
             throw new Exception("Could not check if trade is possible");
         }
+
         return true;
     }
 }

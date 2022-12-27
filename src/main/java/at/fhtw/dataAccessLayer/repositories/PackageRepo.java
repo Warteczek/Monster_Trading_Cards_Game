@@ -76,7 +76,7 @@ public class PackageRepo {
     public List<String> getPackages(UnitOfWork newUnit) throws Exception {
         List<String> allPackages= new ArrayList<String>();
         try{
-            PreparedStatement statement= newUnit.getStatement("SELECT DISTINCT package_id FROM cards WHERE buyable=?");
+            PreparedStatement statement= newUnit.getStatement("SELECT package_id FROM cards WHERE buyable=? ORDER BY created_number ASC");
             statement.setBoolean(1, true);
 
             ResultSet resultSet= statement.executeQuery();

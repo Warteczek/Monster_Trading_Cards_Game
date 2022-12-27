@@ -56,6 +56,8 @@ public class CardsRepo {
         try{
             for(String cardID : cardIDs){
 
+                cardID=cardID.replaceAll("\"", "");
+
                 PreparedStatement statement= newUnit.getStatement("SELECT * FROM stack WHERE username=? AND card_id=?");
                 statement.setString(1, username);
                 statement.setString(2, cardID);
@@ -153,6 +155,8 @@ public class CardsRepo {
 
     public Card getCard(String cardID, UnitOfWork newUnit) throws Exception {
 
+
+        cardID=cardID.replaceAll("\"", "");
         Card card=new Card();
 
         String name="",  type="", id="", element_type="", package_id="";
@@ -173,6 +177,7 @@ public class CardsRepo {
                 damage = resultSet.getInt("damage");
 
 
+
                 card.setName(name);
                 card.setType(type);
                 card.setId(id);
@@ -180,6 +185,8 @@ public class CardsRepo {
                 card.setPackageID(package_id);
                 card.setDamage(damage);
             }
+
+
 
 
         } catch(SQLException exception){

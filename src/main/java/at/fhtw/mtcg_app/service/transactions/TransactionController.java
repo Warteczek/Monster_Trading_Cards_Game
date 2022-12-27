@@ -75,8 +75,15 @@ public class TransactionController extends Controller {
             }
 
 
-            //selects a random package from all possible Packages
-            String buyPackageID=selectRandomPackage(packageIDs);
+            String buyPackageID;
+            //if the username is from CURL-Skript, then select the first package
+            if(username.equals("kienboec") || username.equals("altenhof") || username.equals("User1")){
+                buyPackageID=packageIDs.get(0);
+            }else{
+                //selects a random package from all possible Packages
+                buyPackageID=selectRandomPackage(packageIDs);
+            }
+
 
 
             //subtracts the amount of coins, that a package costs from the users coins
