@@ -153,6 +153,9 @@ public class GameController extends Controller {
             String roundWinner="";
             String winner="";
             String loser="";
+
+            //variables for unique feature(winner gets bonus for next round if the difference of damage is greater than 30)
+            int bonusPlayer1=0, bonusPlayer2=0;
             do{
                 roundWinner="";
                 specialityContent="";
@@ -204,11 +207,20 @@ public class GameController extends Controller {
 
 
                 // battle logic
+
+                double player1Damage;
+                double player2Damage;
+
                 if(player1Card.getType().equals("monster") && player2Card.getType().equals("monster")){
-                    if(player1Card.getDamage()>player2Card.getDamage()){
+                    player1Damage=player1Card.getDamage();
+                    player2Damage=player2Card.getDamage();
+
+                    player1Damage=player1Damage+bonusPlayer1;
+                    player2Damage=player2Damage+bonusPlayer2;
+                    if(player1Damage>player2Damage){
                         roundWinner="player1";
                         newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Card.getName()+" defeats "+player2Card.getName();
-                    }else if(player1Card.getDamage()<player2Card.getDamage()){
+                    }else if(player1Damage<player2Damage){
                         roundWinner="player2";
                         newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player2Card.getName()+" defeats "+player1Card.getName();
                     }else{
@@ -219,8 +231,10 @@ public class GameController extends Controller {
                 }else{
                     if(player1Card.getElement().equals("water") && player2Card.getElement().equals("fire")){
 
-                        double player1Damage=2*player1Card.getDamage();
-                        double player2Damage=0.5*player2Card.getDamage();
+                        player1Damage=2*player1Card.getDamage();
+                        player2Damage=0.5*player2Card.getDamage();
+                        player1Damage=player1Damage+bonusPlayer1;
+                        player2Damage=player2Damage+bonusPlayer2;
                         if(player1Damage>player2Damage){
                             roundWinner="player1";
                             newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Damage+" vs "+player2Damage+" => "+player1Card.getName()+" defeats "+player2Card.getName();
@@ -234,8 +248,10 @@ public class GameController extends Controller {
 
                     }else if(player1Card.getElement().equals("fire") && player2Card.getElement().equals("water")){
 
-                        double player1Damage=0.5*player1Card.getDamage();
-                        double player2Damage=2*player2Card.getDamage();
+                        player1Damage=0.5*player1Card.getDamage();
+                        player2Damage=2*player2Card.getDamage();
+                        player1Damage=player1Damage+bonusPlayer1;
+                        player2Damage=player2Damage+bonusPlayer2;
                         if(player1Damage>player2Damage){
                             roundWinner="player1";
                             newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Damage+" vs "+player2Damage+" => "+player1Card.getName()+" defeats "+player2Card.getName();
@@ -248,8 +264,10 @@ public class GameController extends Controller {
                         }
                     }else if(player1Card.getElement().equals("fire") && player2Card.getElement().equals("normal")){
 
-                        double player1Damage=2*player1Card.getDamage();
-                        double player2Damage=player2Card.getDamage();
+                        player1Damage=2*player1Card.getDamage();
+                        player2Damage=player2Card.getDamage();
+                        player1Damage=player1Damage+bonusPlayer1;
+                        player2Damage=player2Damage+bonusPlayer2;
                         if(player1Damage>player2Damage){
                             roundWinner="player1";
                             newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Damage+" vs "+player2Damage+" => "+player1Card.getName()+" defeats "+player2Card.getName();
@@ -262,8 +280,10 @@ public class GameController extends Controller {
                         }
                     }else if(player1Card.getElement().equals("normal") && player2Card.getElement().equals("fire")){
 
-                        double player1Damage=player1Card.getDamage();
-                        double player2Damage=2*player2Card.getDamage();
+                        player1Damage=player1Card.getDamage();
+                        player2Damage=2*player2Card.getDamage();
+                        player1Damage=player1Damage+bonusPlayer1;
+                        player2Damage=player2Damage+bonusPlayer2;
                         if(player1Damage>player2Damage){
                             roundWinner="player1";
                             newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Damage+" vs "+player2Damage+" => "+player1Card.getName()+" defeats "+player2Card.getName();
@@ -276,8 +296,10 @@ public class GameController extends Controller {
                         }
                     }else if(player1Card.getElement().equals("normal") && player2Card.getElement().equals("water")){
 
-                        double player1Damage=2*player1Card.getDamage();
-                        double player2Damage=player2Card.getDamage();
+                        player1Damage=2*player1Card.getDamage();
+                        player2Damage=player2Card.getDamage();
+                        player1Damage=player1Damage+bonusPlayer1;
+                        player2Damage=player2Damage+bonusPlayer2;
                         if(player1Damage>player2Damage){
                             roundWinner="player1";
                             newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Damage+" vs "+player2Damage+" => "+player1Card.getName()+" defeats "+player2Card.getName();
@@ -290,8 +312,10 @@ public class GameController extends Controller {
                         }
                     }else if(player1Card.getElement().equals("water") && player2Card.getElement().equals("normal")){
 
-                        double player1Damage=player1Card.getDamage();
-                        double player2Damage=2*player2Card.getDamage();
+                        player1Damage=player1Card.getDamage();
+                        player2Damage=2*player2Card.getDamage();
+                        player1Damage=player1Damage+bonusPlayer1;
+                        player2Damage=player2Damage+bonusPlayer2;
                         if(player1Damage>player2Damage){
                             roundWinner="player1";
                             newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Damage+" vs "+player2Damage+" => "+player1Card.getName()+" defeats "+player2Card.getName();
@@ -303,10 +327,14 @@ public class GameController extends Controller {
                             newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Damage+" vs "+player2Damage+" => draw";
                         }
                     }else{
-                        if(player1Card.getDamage()>player2Card.getDamage()){
+                        player1Damage=player1Card.getDamage();
+                        player2Damage=player2Card.getDamage();
+                        player1Damage=player1Damage+bonusPlayer1;
+                        player2Damage=player2Damage+bonusPlayer2;
+                        if(player1Damage>player2Damage){
                             roundWinner="player1";
                             newContent="\n"+firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player1Card.getName()+" defeats "+player2Card.getName();
-                        }else if(player1Card.getDamage()<player2Card.getDamage()){
+                        }else if(player1Damage<player2Damage){
                             roundWinner="player2";
                             newContent=firstPlayer+": "+player1Card.getName()+" ("+player1Card.getDamage()+" Damage) vs "+secondPlayer+": "+player2Card.getName()+" ("+player2Card.getDamage()+" Damage)  => "+player2Card.getName()+" defeats "+player1Card.getName();
                         }else{
@@ -328,7 +356,23 @@ public class GameController extends Controller {
                     updateSecondPlayerDeck.add(player2Card);
                 }
 
-                responseContent= responseContent + specialityContent + newContent;
+                //when a player wins with more than 30 points more than the other one, he receives a bonus of 10 points for the next round
+                String nextRoundBonusContent="";
+                if(player1Damage-player2Damage>30){
+                    nextRoundBonusContent="\n"+firstPlayer+" absolutely destroyed "+secondPlayer+" and will therefore get 10 bonus points in the next round!\n\n";
+                    bonusPlayer1=10;
+                    bonusPlayer2=0;
+                }else if(player2Damage-player1Damage>30){
+                    nextRoundBonusContent="\n"+secondPlayer+" absolutely destroyed "+firstPlayer+" and will therefore get 10 bonus points in the next round!\n\n";
+                    bonusPlayer2=10;
+                    bonusPlayer1=0;
+                }
+                else{
+                    bonusPlayer1=0;
+                    bonusPlayer2=0;
+                }
+
+                responseContent= responseContent + specialityContent + newContent+ nextRoundBonusContent;
 
 
                 if(updateFirstPlayerDeck.isEmpty()){
@@ -350,6 +394,7 @@ public class GameController extends Controller {
                 if(roundsPlayed==100){
                     responseContent= responseContent + "\n\n IT ENDS IN A DRAW!!!";
                 }
+
 
             }while(roundsPlayed<100 || updateFirstPlayerDeck.isEmpty() || updateSecondPlayerDeck.isEmpty());
 
