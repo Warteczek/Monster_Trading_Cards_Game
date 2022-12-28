@@ -17,7 +17,7 @@ public class TradeTest {
         urlConnection.setDoOutput(true);
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("{\"Id\":\"tradeID1-37d0-426e-994e-43fc3ac83c08\", \"CardToTrade\":\"a6fde738-c65a-4b10-b400-6fef0fdb28ba\", \"Type\": \"monster\", \"MinimumDamage\": 15.0}");
+        printWriter.write("{\"Id\":\"tradeID1-37d0-426e-994e-43fc3ac83c08\", \"CardToTrade\":\"jbr56bjq-649c-40f9-ba3a-8657f4b3439f\", \"Type\": \"monster\", \"MinimumDamage\": 15.0}");
         printWriter.close();
 
         InputStream inputStream = urlConnection.getInputStream();
@@ -42,7 +42,7 @@ public class TradeTest {
         urlConnection.setDoOutput(true);
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("{\"Id\":\"tradeID2-37d0-426e-994e-43fc3ac83c08\", \"CardToTrade\":\"70962948-2bf7-44a9-9ded-8c68eeac7793\", \"Type\": \"monster\", \"MinimumDamage\": 15.0}");
+        printWriter.write("{\"Id\":\"tradeID2-37d0-426e-994e-43fc3ac83c08\", \"CardToTrade\":\"jbr56bjq-37d0-426e-994e-43fc3ac83c08\", \"Type\": \"monster\", \"MinimumDamage\": 15.0}");
         printWriter.close();
 
         if(urlConnection.getResponseCode()==403){
@@ -62,7 +62,7 @@ public class TradeTest {
         urlConnection.setDoOutput(true);
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("{\"Id\":\"tradeID3-37d0-426e-994e-43fc3ac83c08\", \"CardToTrade\":\"2272ba48-6662-404d-a9a1-41a9bed316d9\", \"Type\": \"monster\", \"MinimumDamage\": 15.0}");
+        printWriter.write("{\"Id\":\"tradeID3-37d0-426e-994e-43fc3ac83c08\", \"CardToTrade\":\"1cb6ab86-bdb2-47e5-b6e4-68c5ab389334\", \"Type\": \"monster\", \"MinimumDamage\": 15.0}");
         printWriter.close();
 
         if(urlConnection.getResponseCode()==403){
@@ -81,7 +81,7 @@ public class TradeTest {
         urlConnection.setDoOutput(true);
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("{\"Id\":\"tradeID1-37d0-426e-994e-43fc3ac83c08\", \"CardToTrade\":\"2272ba48-6662-404d-a9a1-41a9bed316d9\", \"Type\": \"monster\", \"MinimumDamage\": 15.0}");
+        printWriter.write("{\"Id\":\"tradeID1-37d0-426e-994e-43fc3ac83c08\", \"CardToTrade\":\"jbr56bjq-649c-40f9-ba3a-8657f4b3439f\", \"Type\": \"monster\", \"MinimumDamage\": 15.0}");
         printWriter.close();
 
         if(urlConnection.getResponseCode()==409){
@@ -127,7 +127,7 @@ public class TradeTest {
         urlConnection.setDoOutput(true);
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("a6fde738-c65a-4b10-b400-6fef0fdb28ba");
+        printWriter.write("171f6076-4eb5-4a7d-b3f2-2d650cc3d237");
         printWriter.close();
 
         if(urlConnection.getResponseCode()==403){

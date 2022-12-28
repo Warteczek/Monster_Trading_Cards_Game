@@ -37,7 +37,7 @@ public class CardsTest {
 
     @Test
     void testShowCardsDeckIsNotConfigured() throws IOException {
-        URL url = new URL("http://localhost:10001/cards");
+        URL url = new URL("http://localhost:10001/deck");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
         urlConnection.setRequestProperty("Authorization", "Basic User1-mtcgToken");
@@ -62,7 +62,7 @@ public class CardsTest {
         urlConnection.setDoOutput(true);
         OutputStream outputStream = urlConnection.getOutputStream();
         PrintWriter printWriter = new PrintWriter(outputStream);
-        printWriter.write("[\"a1618f1e-4f4c-4e09-9647-87e16f1edd2d\", \"ce6bcaee-47e1-4011-a49e-5a4d7d4245f3\", \"74635fae-8ad3-4295-9139-320ab89c2844\", \"70962948-2bf7-44a9-9ded-8c68eeac7793\"]");
+        printWriter.write("[\"jbr56bjq-37d0-426e-994e-43fc3ac83c08\", \"jbr56bjq-e25e-4a95-aa2c-782823f36e2a\", \"jbr56bjq-7c86-4d06-9a80-641c2019a79f\", \"jbr56bjq-bdb2-47e5-b6e4-68c5ab389334\"]");
         printWriter.close();
 
         InputStream inputStream = urlConnection.getInputStream();
@@ -73,6 +73,8 @@ public class CardsTest {
 
         bufferedReader.close();
     }
+
+    /*
     @Test
     void testConfigureDeckKienboec() throws IOException {
         URL url = new URL("http://localhost:10001/deck");
@@ -92,7 +94,7 @@ public class CardsTest {
         Assertions.assertEquals(bufferedReader.readLine(), "The deck has been successfully configured");
 
         bufferedReader.close();
-    }
+    }*/
 
     @Test
     void testConfigureDeckButCardDoesNotFromUser() throws IOException {
@@ -169,7 +171,7 @@ public class CardsTest {
         URL url = new URL("http://localhost:10001/deck");
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setRequestMethod("GET");
-        urlConnection.setRequestProperty("Authorization", "Basic kienboec-mtcgToken");
+        urlConnection.setRequestProperty("Authorization", "Basic admin-mtcgToken");
 
         int responseCode=urlConnection.getResponseCode();
 
