@@ -198,7 +198,10 @@ public class TradingRepo {
     }
 
     public void executeTrade(String dealID, String newOwnerDealCard, String newOwnerOfferCard, String dealCard, String offerCard, UnitOfWork newUnit) throws Exception {
+        offerCard=offerCard.replaceAll("\"", "");
+
         try{
+
             PreparedStatement statement= newUnit.getStatement("UPDATE stack SET username=? WHERE card_id=? AND username=?");
             statement.setString(1, newOwnerDealCard);
             statement.setString(2, dealCard);

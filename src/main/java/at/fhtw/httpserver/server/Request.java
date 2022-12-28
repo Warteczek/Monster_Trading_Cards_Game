@@ -110,6 +110,9 @@ public class Request {
 
     public boolean checkAuthenticationToken(){
         String token = this.headerMap.getHeader("Authorization");
+        if (token == null) {
+            return false;
+        }
 
         String[] splitAuth = token.split(" ");
         String[] splitToken = splitAuth[1].split("-");
@@ -121,6 +124,9 @@ public class Request {
 
     public boolean checkAdminToken(){
         String token = this.headerMap.getHeader("Authorization");
+        if (token == null) {
+            return false;
+        }
 
         String[] splitAuth = token.split(" ");
         String[] splitToken = splitAuth[1].split("-");
@@ -132,6 +138,11 @@ public class Request {
 
     public String getTokenUser(){
         String token = this.headerMap.getHeader("Authorization");
+
+        if (token == null) {
+            return "";
+        }
+
 
         String[] splitAuth = token.split(" ");
         String[] splitToken = splitAuth[1].split("-");

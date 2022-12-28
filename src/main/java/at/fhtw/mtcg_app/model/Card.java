@@ -17,6 +17,28 @@ public class Card {
     @JsonAlias({"PackageID"})
     private String packageID;
 
+    @JsonAlias({"Buyable"})
+    private boolean buyable;
+
+    @JsonAlias({"Created_number"})
+    private int created_number;
+
+    public boolean isBuyable() {
+        return buyable;
+    }
+
+    public void setBuyable(boolean buyable) {
+        this.buyable = buyable;
+    }
+
+    public int getCreated_number() {
+        return created_number;
+    }
+
+    public void setCreated_number(int created_number) {
+        this.created_number = created_number;
+    }
+
     public String getId() {
         return id;
     }

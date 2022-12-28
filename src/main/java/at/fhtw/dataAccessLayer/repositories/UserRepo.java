@@ -1,9 +1,13 @@
 package at.fhtw.dataAccessLayer.repositories;
 
 import at.fhtw.dataAccessLayer.UnitOfWork;
+import at.fhtw.mtcg_app.model.Stats;
+import at.fhtw.mtcg_app.model.Trade;
 import at.fhtw.mtcg_app.model.User;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepo {
 
@@ -188,5 +192,76 @@ public class UserRepo {
             e.printStackTrace();
             throw new Exception("could not subtract coins from user");
         }
+    }
+
+    public Stats getUserStats(String username, UnitOfWork newUnit) throws Exception {
+        String name="";
+        int elo = 0, wins = 0, losses = 0;
+        try{
+            PreparedStatement statement= newUnit.getStatement("SELECT name, elo, wins, losses FROM users WHERE username=?");
+            statement.setString(1, username);
+
+            ResultSet resultSet= statement.executeQuery();
+
+            if (resultSet.next()) {
+                elo=resultSet.getInt("elo");
+                wins=resultSet.getInt("wins");
+                losses=resultSet.getInt("losses");
+                name= resultSet.getString("name");
+            }
+            else{
+                return new Stats();
+            }
+
+            Stats statsOfUser = new Stats();
+
+            statsOfUser.setElo(elo);
+            statsOfUser.setWins(wins);
+            statsOfUser.setLosses(losses);
+            statsOfUser.setName(name);
+
+            return statsOfUser;
+
+        }catch(SQLException exception) {
+            exception.printStackTrace();
+            throw new Exception("could not get user data");
+        }
+    }
+
+    public List<Stats> getScoreboard(String username, UnitOfWork newUnit) throws Exception {
+        List<Stats> scoreboard = new ArrayList<>();
+
+        String name="";
+        int elo = 0, wins = 0, losses = 0;
+
+        try{
+            PreparedStatement statement= newUnit.getStatement("SELECT name, elo, wins, losses FROM users ORDER BY elo DESC");
+
+            ResultSet resultSet= statement.executeQuery();
+
+            while(resultSet.next()){
+                elo=resultSet.getInt("elo");
+                wins=resultSet.getInt("wins");
+                losses=resultSet.getInt("losses");
+                name= resultSet.getString("name");
+
+
+
+                Stats stats = new Stats();
+
+                stats.setElo(elo);
+                stats.setWins(wins);
+                stats.setLosses(losses);
+                stats.setName(name);
+
+                scoreboard.add(stats);
+            }
+
+        } catch(SQLException exception){
+            exception.printStackTrace();
+            throw new Exception("Could not get cards");
+        }
+
+        return scoreboard;
     }
 }

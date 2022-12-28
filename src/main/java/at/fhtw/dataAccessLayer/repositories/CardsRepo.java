@@ -56,6 +56,8 @@ public class CardsRepo {
         try{
             for(String cardID : cardIDs){
 
+                cardID=cardID.replaceAll("\"", "");
+
                 PreparedStatement statement= newUnit.getStatement("SELECT * FROM stack WHERE username=? AND card_id=?");
                 statement.setString(1, username);
                 statement.setString(2, cardID);
@@ -84,11 +86,19 @@ public class CardsRepo {
 
             ResultSet resultSet= statement.executeQuery();
             if (resultSet.next()){
+                //selects all card IDs
                 String firstCard_ID=resultSet.getString("firstCard_ID");
                 String secondCard_ID =resultSet.getString("secondCard_ID");
                 String thirdCard_ID=resultSet.getString("thirdCard_ID");
                 String fourthCard_ID=resultSet.getString("fourthCard_ID");
 
+                //if deck is not configured
+                if(firstCard_ID==null || secondCard_ID==null || thirdCard_ID==null || fourthCard_ID==null){
+                    return deckCards;
+                }
+
+
+                //selects all data from cards
                 PreparedStatement statementCards= newUnit.getStatement("SELECT * FROM cards WHERE id=? OR id=? OR id=? OR id=?");
                 statementCards.setString(1, firstCard_ID);
                 statementCards.setString(2, secondCard_ID);
@@ -145,6 +155,8 @@ public class CardsRepo {
 
     public Card getCard(String cardID, UnitOfWork newUnit) throws Exception {
 
+
+        cardID=cardID.replaceAll("\"", "");
         Card card=new Card();
 
         String name="",  type="", id="", element_type="", package_id="";
@@ -165,6 +177,7 @@ public class CardsRepo {
                 damage = resultSet.getInt("damage");
 
 
+
                 card.setName(name);
                 card.setType(type);
                 card.setId(id);
@@ -172,6 +185,8 @@ public class CardsRepo {
                 card.setPackageID(package_id);
                 card.setDamage(damage);
             }
+
+
 
 
         } catch(SQLException exception){
